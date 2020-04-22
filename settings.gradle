@@ -1,0 +1,2 @@
+rootProject.name='SKH_Ivan_App'
+include ':app'
