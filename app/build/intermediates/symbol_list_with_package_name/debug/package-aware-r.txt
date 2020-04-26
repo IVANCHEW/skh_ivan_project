@@ -1161,7 +1161,9 @@ id bottom
 id buttonPanel
 id button_count
 id button_random
+id button_rest_api
 id button_second
+id button_speak
 id button_toast
 id center
 id center_horizontal
@@ -1319,6 +1321,7 @@ id textinput_counter
 id textinput_error
 id textinput_helper_text
 id textview_count
+id textview_debug
 id textview_second
 id time
 id title
@@ -1469,6 +1472,7 @@ string count
 string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior
 string first_fragment_label
+string for_debugging
 string hello_first_fragment
 string hello_second_fragment
 string hide_bottom_view_on_scroll_behavior
@@ -1476,6 +1480,7 @@ string mtrl_chip_close_icon_content_description
 string nav_app_bar_navigate_up_description
 string nav_app_bar_open_drawer_description
 string next
+string no_recognition_available
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through
@@ -1483,8 +1488,10 @@ string path_password_eye_mask_visible
 string path_password_strike_through
 string previous
 string random
+string rest_api
 string search_menu_title
 string second_fragment_label
+string speaker
 string status_bar_notification_info_overflow
 string toast
 style AlertDialog_AppCompat

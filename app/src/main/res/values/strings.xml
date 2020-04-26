@@ -9,7 +9,11 @@
     <string name="toast">toast</string>
     <string name="count">count</string>
     <string name="random">random</string>
+    <string name="speaker">speaker</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="no_recognition_available">\"Speech recognition not available</string>
+    <string name="rest_api">\"Rest API\"</string>
+    <string name="for_debugging">\"For Debugging\"</string>
 </resources>
