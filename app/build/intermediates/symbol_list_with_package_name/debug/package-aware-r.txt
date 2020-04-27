@@ -729,7 +729,6 @@ color primary_text_disabled_material_dark
 color primary_text_disabled_material_light
 color ripple_material_dark
 color ripple_material_light
-color screenBackground
 color secondary_text_default_material_dark
 color secondary_text_default_material_light
 color secondary_text_disabled_material_dark
@@ -1157,10 +1156,10 @@ id auto
 id barrier
 id beginning
 id blocking
+id book_Linear_Layout
 id bottom
 id buttonPanel
 id button_count
-id button_random
 id button_rest_api
 id button_second
 id button_speak
@@ -1320,7 +1319,6 @@ id text_input_password_toggle
 id textinput_counter
 id textinput_error
 id textinput_helper_text
-id textview_count
 id textview_debug
 id textview_second
 id time

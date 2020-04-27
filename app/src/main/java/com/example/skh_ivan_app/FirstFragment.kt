@@ -4,22 +4,29 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.annotation.RequiresApi
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import org.w3c.dom.Text
+import java.io.ByteArrayInputStream
 import java.lang.Exception
 import java.lang.String.format
 import java.util.*
@@ -40,17 +47,20 @@ class FirstFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_first, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
 
+        /*
         view.findViewById<Button>(R.id.button_count).setOnClickListener {
             val myToast = Toast.makeText(context, "Count!", Toast.LENGTH_SHORT)
             myToast.show()
             countMe(view)
             // findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
+         */
 
         view.findViewById<Button>(R.id.button_toast).setOnClickListener {
             val myToast = Toast.makeText(context, "Hello Toast!", Toast.LENGTH_SHORT)
@@ -72,7 +82,8 @@ class FirstFragment : Fragment() {
             val textview_output = view.findViewById<TextView>(R.id.textview_debug)
 
             // Instantiate the RequestQueue.
-            val queue = Volley.newRequestQueue(context)
+                val queue = Volley.newRequestQueue(context)
+
             //val url = "http://www.google.com"
 
             // To create a new book data
@@ -102,13 +113,66 @@ class FirstFragment : Fragment() {
 
             val jsonArrayRequest = JsonArrayRequest(Request.Method.GET, url, null,
                 Response.Listener { response ->
+
+                    // class Book(val bookTitle: String, val publisher: String, val bookAuthor: String)
+
                     textview_output.text = "Response received"
-                    Log.i(TAG, "Manual Log $response")
+                    val responseLength = response.length()
+                    Log.i(TAG, "Manual Log, total data: $responseLength raw: $response")
+                    queue.stop()
+
+                    //Generate cards in cardView_firstFragment
+                    val bookConstraintView = view.findViewById<LinearLayout>(R.id.book_Linear_Layout)
+
+                    //Create this array to store each textview's ID
+                    val bookCardTextViewIDArray = Array(responseLength, {i-> i*1})
+                    for (i in 0..(responseLength-1)){
+
+                        //Obtain a single book object from the response
+                        val bookObject = response.getJSONObject(i)
+
+                        //Retrieve the book title from the object
+                        val bookTitle = bookObject.getString("Book_Title")
+
+                        //Create and configure the new textview
+                        val tempID = View.generateViewId()
+                        bookCardTextViewIDArray[i] = tempID
+                        val newBookCard = TextView(context)
+                        newBookCard.layoutParams
+                        newBookCard.text = "Card $i, $bookTitle"
+                        newBookCard.id = tempID
+                        bookConstraintView.addView(newBookCard)
+
+                        //Retrieve the thumbnail
+                        try {
+                            val picData = bookObject.getString("Cover")
+                            val picByteArray = Base64.decode(picData,Base64.DEFAULT)
+                            val decodeByte = ByteArrayInputStream(picByteArray)
+                            val bookThumbnail = BitmapFactory.decodeStream(decodeByte)
+                            val bookImageView = ImageView(context)
+                            bookImageView.setImageBitmap(bookThumbnail)
+                            bookConstraintView.addView(bookImageView)
+                            Log.i(TAG, "Manual Log, image creation card $i")
+                        } catch (e: Exception){
+                            Log.i(TAG, "Manual Log, image creation error: " + e.message)
+                        }
+
+                        /*
+                        if (i>0){
+                            Log.i(TAG, "Manual Log: Called constraint")
+                            val set = ConstraintSet()
+                            set.connect(bookCardTextViewIDArray[i], ConstraintSet.BOTTOM, bookCardTextViewIDArray[i-1], ConstraintSet.TOP)
+                            set.applyTo(bookConstraintView)
+                        }
+                         */
+
+                    }
                 },
                 Response.ErrorListener { error ->
                     textview_output.text = "Error"
                     Log.i(TAG, "Manual Log error")
                     Log.e(TAG, "Manual Log $error")
+                    queue.stop()
                 }
             )
 
@@ -117,11 +181,14 @@ class FirstFragment : Fragment() {
             queue.add(jsonArrayRequest)
         }
 
+        /*
         val setZero = view.findViewById<TextView>(R.id.textview_count)
         var zeroHolder = 0
         setZero.text = zeroHolder.toString()
+         */
     }
 
+    /*
     private fun countMe(view: View){
         val showCountTextView = view.findViewById<TextView>(R.id.textview_count)
         val countString = showCountTextView.text.toString()
@@ -129,6 +196,7 @@ class FirstFragment : Fragment() {
         count++
         showCountTextView.text = count.toString()
     }
+     */
 
     private fun speak(){
         val mIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -146,9 +214,10 @@ class FirstFragment : Fragment() {
         }
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val outputText = view?.findViewById<TextView>(R.id.textview_count)
+        val outputText = view?.findViewById<TextView>(R.id.textview_debug)
         when (requestCode){
             REQUEST_CODE_SPEECH_INPUT -> {
                 if (resultCode== Activity.RESULT_OK && null != data){
@@ -163,4 +232,5 @@ class FirstFragment : Fragment() {
             }
         }
     }
+
 }
