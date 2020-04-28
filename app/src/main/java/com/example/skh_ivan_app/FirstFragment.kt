@@ -7,6 +7,7 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Typeface
 import android.media.Image
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.provider.MediaStore
 import android.speech.RecognizerIntent
 import android.util.Base64
 import android.util.Log
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -43,8 +45,6 @@ import java.util.*
 class FirstFragment : Fragment() {
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
-
-    //For camera
     private val REQUEST_IMAGE_CAPTURE = 1
 
     override fun onCreateView(
@@ -61,22 +61,6 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
-
-        /*
-        view.findViewById<Button>(R.id.button_count).setOnClickListener {
-            val myToast = Toast.makeText(context, "Count!", Toast.LENGTH_SHORT)
-            myToast.show()
-            countMe(view)
-            // findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
-         */
-
-        /*
-        view.findViewById<Button>(R.id.button_toast).setOnClickListener {
-            val myToast = Toast.makeText(context, "Hello Toast!", Toast.LENGTH_SHORT)
-            myToast.show()
-        }
-         */
 
         //Button to initiate speaker functions
         view.findViewById<Button>(R.id.button_speak).setOnClickListener{
@@ -108,11 +92,7 @@ class FirstFragment : Fragment() {
                     Log.i(TAG, "Manual Log, total data: $responseLength raw: $response")
                     queue.stop()
 
-                    //Generate cards in cardView_firstFragment
-                    val bookConstraintView = view.findViewById<LinearLayout>(R.id.book_Linear_Layout)
-
                     //Create this array to store each textview's ID
-                    val bookCardTextViewIDArray = Array(responseLength, {i-> i*1})
                     for (i in 0..(responseLength-1)){
 
                         //Obtain a single book object from the response
@@ -120,31 +100,24 @@ class FirstFragment : Fragment() {
 
                         //Retrieve the book title from the object
                         val bookTitle = bookObject.getString("Book_Title")
+                        val bookAuthor = bookObject.getString("Book_Author")
+                        val bookPublisher = bookObject.getString("Publisher")
 
-                        //Create and configure the new textview
-                        val tempID = View.generateViewId()
-                        bookCardTextViewIDArray[i] = tempID
-                        val newBookCard = TextView(context)
-                        newBookCard.layoutParams
-                        newBookCard.text = "Card $i, $bookTitle"
-                        newBookCard.id = tempID
-                        bookConstraintView.addView(newBookCard)
-
-                        //Retrieve the thumbnail
+                        //Retrieve the thumbnail AND create card
                         try {
+                            //Decoding image from REST response
                             val picData = bookObject.getString("Cover")
                             val picByteArray = Base64.decode(picData,Base64.DEFAULT)
                             val decodeByte = ByteArrayInputStream(picByteArray)
                             val bookThumbnail = BitmapFactory.decodeStream(decodeByte)
                             val reSizedBookThumbnail = resizeBitmap(bookThumbnail, 200, 300)
-                            val bookImageView = ImageView(context)
-                            bookImageView.setImageBitmap(reSizedBookThumbnail)
-                            bookConstraintView.addView(bookImageView)
+
+                            createBookCard(bookTitle,bookAuthor,bookPublisher,reSizedBookThumbnail)
+
                             Log.i(TAG, "Manual Log, image creation card $i")
                         } catch (e: Exception){
                             Log.i(TAG, "Manual Log, image creation error: " + e.message)
                         }
-
                     }
                 },
                 Response.ErrorListener { error ->
@@ -156,26 +129,57 @@ class FirstFragment : Fragment() {
             )
 
             // Add the request to the RequestQueue.
-            //queue.add(stringRequest)
             queue.add(jsonArrayRequest)
         }
-
-        /*
-        val setZero = view.findViewById<TextView>(R.id.textview_count)
-        var zeroHolder = 0
-        setZero.text = zeroHolder.toString()
-         */
     }
 
-    /*
-    private fun countMe(view: View){
-        val showCountTextView = view.findViewById<TextView>(R.id.textview_count)
-        val countString = showCountTextView.text.toString()
-        var count = countString.toInt()
-        count++
-        showCountTextView.text = count.toString()
+    // Create a card view
+    @SuppressLint("SetTextI18n")
+    private fun createBookCard(bookTitle: String, bookAuthor: String, bookPublisher:String, bookCover:Bitmap){
+        Log.i(TAG, "Manual Log, create book card")
+        //Headers
+        val bookLinearLayout = view!!.findViewById<LinearLayout>(R.id.book_Linear_Layout)
+
+        // Create the parent layout
+        val cardLayout = LinearLayout(context)
+        cardLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        cardLayout.orientation = LinearLayout.HORIZONTAL
+
+        // Add the book cover thumbnail
+        val bookImageView = ImageView(context)
+        bookImageView.setImageBitmap(bookCover)
+        val imageViewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        imageViewLayoutParam.setMargins(20, 20, 0, 0)
+        bookImageView.layoutParams = imageViewLayoutParam
+        cardLayout.addView(bookImageView)
+
+        // Prepare the text
+        val textLayout = LinearLayout(context)
+        textLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        textLayout.orientation = LinearLayout.VERTICAL
+
+        val textViewArray = Array(3){TextView(context)}
+        val textviewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        textviewLayoutParam.setMargins(10, 10, 0, 0)
+
+        textViewArray[0].text = bookTitle
+        textViewArray[1].text = "By $bookAuthor"
+        textViewArray[2].text = "Publisher: $bookPublisher"
+
+        for (i in textViewArray.indices) {
+            textViewArray[i].layoutParams = textviewLayoutParam
+            textLayout.addView(textViewArray[i])
+        }
+
+        cardLayout.addView(textLayout)
+
+        //Add the generated card layout to the existing layout
+        bookLinearLayout.addView(cardLayout)
     }
-     */
 
     // To initiate camera to take picture
     private fun dispatchTakePictureIntent() {
@@ -243,27 +247,6 @@ class FirstFragment : Fragment() {
     }
 
     private fun resizeBitmap(bitmap:Bitmap, width:Int, height:Int):Bitmap{
-        /*
-            *** reference source developer.android.com ***
-            Bitmap createScaledBitmap (Bitmap src, int dstWidth, int dstHeight, boolean filter)
-                Creates a new bitmap, scaled from an existing bitmap, when possible. If the specified
-                width and height are the same as the current width and height of the source bitmap,
-                the source bitmap is returned and no new bitmap is created.
-
-            Parameters
-                src Bitmap : The source bitmap.
-                    This value must never be null.
-
-            dstWidth int : The new bitmap's desired width.
-            dstHeight int : The new bitmap's desired height.
-            filter boolean : true if the source should be filtered.
-
-            Returns
-                Bitmap : The new scaled bitmap or the source bitmap if no scaling is required.
-
-            Throws
-                IllegalArgumentException : if width is <= 0, or height is <= 0
-        */
         return Bitmap.createScaledBitmap(bitmap, width, height,false)
     }
 
