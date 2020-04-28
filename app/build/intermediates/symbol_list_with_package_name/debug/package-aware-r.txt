@@ -1157,13 +1157,14 @@ id barrier
 id beginning
 id blocking
 id book_Linear_Layout
+id book_Scrollview
 id bottom
 id buttonPanel
+id button_camera
 id button_count
 id button_rest_api
 id button_second
 id button_speak
-id button_toast
 id center
 id center_horizontal
 id center_vertical
@@ -1215,6 +1216,7 @@ id icon
 id icon_group
 id ifRoom
 id image
+id imageview_camera_thumbnail
 id info
 id invisible
 id italic
@@ -1464,6 +1466,7 @@ string action_settings
 string app_name
 string appbar_scrolling_view_behavior
 string bottom_sheet_behavior
+string camera
 string character_counter_content_description
 string character_counter_pattern
 string count
