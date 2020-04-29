@@ -17,4 +17,5 @@
     <string name="rest_api">Rest API</string>
     <string name="for_debugging">For Debugging</string>
     <string name="camera">Camera</string>
+    <string name="new_book">New Book</string>
 </resources>

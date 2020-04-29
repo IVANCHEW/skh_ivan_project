@@ -1161,7 +1161,7 @@ id book_Scrollview
 id bottom
 id buttonPanel
 id button_camera
-id button_count
+id button_new_book
 id button_rest_api
 id button_second
 id button_speak
@@ -1255,6 +1255,7 @@ id parentPanel
 id parent_matrix
 id percent
 id pin
+id progressBar1
 id progress_circular
 id progress_horizontal
 id radio
@@ -1480,6 +1481,7 @@ string hide_bottom_view_on_scroll_behavior
 string mtrl_chip_close_icon_content_description
 string nav_app_bar_navigate_up_description
 string nav_app_bar_open_drawer_description
+string new_book
 string next
 string no_recognition_available
 string password_toggle_content_description

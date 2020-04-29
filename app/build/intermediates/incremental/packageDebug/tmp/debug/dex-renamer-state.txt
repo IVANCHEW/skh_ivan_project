@@ -1,4 +1,4 @@
-#Wed Apr 29 00:49:40 MYT 2020
+#Wed Apr 29 10:26:28 MYT 2020
 base.0=/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/dex/debug/out/classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

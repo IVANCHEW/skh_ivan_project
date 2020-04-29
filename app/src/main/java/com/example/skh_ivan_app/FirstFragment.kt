@@ -3,6 +3,7 @@ package com.example.skh_ivan_app
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,6 +14,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.speech.RecognizerIntent
+import android.text.InputType
 import android.util.Base64
 import android.util.Log
 import android.util.TypedValue
@@ -25,6 +27,7 @@ import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.isVisible
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
@@ -46,6 +49,7 @@ class FirstFragment : Fragment() {
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
     private val REQUEST_IMAGE_CAPTURE = 1
+    val bookParams = HashMap<String,String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,6 +78,10 @@ class FirstFragment : Fragment() {
 
         //Button to initiate web service functions
         view.findViewById<Button>(R.id.button_rest_api).setOnClickListener {
+
+            //Show progress bar
+            val loadingBar = view.findViewById<ProgressBar>(R.id.progressBar1)
+            loadingBar.isVisible = true
 
             val textview_output = view.findViewById<TextView>(R.id.textview_debug)
 
@@ -119,6 +127,8 @@ class FirstFragment : Fragment() {
                             Log.i(TAG, "Manual Log, image creation error: " + e.message)
                         }
                     }
+
+                    loadingBar.isVisible = false
                 },
                 Response.ErrorListener { error ->
                     textview_output.text = "Error"
@@ -130,6 +140,47 @@ class FirstFragment : Fragment() {
 
             // Add the request to the RequestQueue.
             queue.add(jsonArrayRequest)
+        }
+
+        //Button to create new book with prompt
+        view.findViewById<Button>(R.id.button_new_book).setOnClickListener {
+
+            //Construct the alert dialogue
+            val newBookDialogue = AlertDialog.Builder(context)
+            newBookDialogue.setTitle("Create New Book")
+
+            val DialogueLinearLayout = LinearLayout(context)
+            DialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT)
+            DialogueLinearLayout.orientation = LinearLayout.VERTICAL
+            val newbookTextInput = Array(3){EditText(context)}
+            newbookTextInput[0].setHint("Book title")
+            newbookTextInput[1].setHint("Author")
+            newbookTextInput[2].setHint("Publisher")
+
+            for (i in newbookTextInput.indices){
+                newbookTextInput[i].inputType = InputType.TYPE_CLASS_TEXT
+                DialogueLinearLayout.addView(newbookTextInput[i])
+            }
+
+            newBookDialogue.setView(DialogueLinearLayout)
+
+            newBookDialogue.setPositiveButton("Take Cover Picture"){ _, _ ->
+                // Do something when user press the positive button
+                Toast.makeText(context,"Please take a picture of the cover.",Toast.LENGTH_SHORT).show()
+                bookParams["book_Title"] = newbookTextInput[0].text.toString()
+                bookParams["book_Author"] = newbookTextInput[1].text.toString()
+                bookParams["Publisher"] = newbookTextInput[2].text.toString()
+
+                // Capture cover
+                dispatchTakePictureIntent()
+            }
+
+            newBookDialogue.setNeutralButton("Cancel"){_,_ ->
+                Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+            }
+
+            newBookDialogue.show()
         }
     }
 
@@ -217,18 +268,20 @@ class FirstFragment : Fragment() {
         val queue = Volley.newRequestQueue(context)
         Log.i(TAG, "Manual Log, book submission function called")
 
-        val ivanTestNumber: String = "6"
+        val ivanTestNumber: String = "8"
+        /*
         val bookTitle: String = "Cat Book $ivanTestNumber"
         val bookAuthor: String = "Cat Author $ivanTestNumber"
         val publisher: String = "Cat Publisher $ivanTestNumber"
+         */
 
         val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_Book"
 
         //Submit through body
         val params = HashMap<String,String>()
-        params["book_Title"] = bookTitle
-        params["book_Author"] = bookAuthor
-        params["Publisher"] = publisher
+        params["book_Title"] = bookParams["book_Title"].toString()
+        params["book_Author"] = bookParams["book_Author"].toString()
+        params["Publisher"] = bookParams["Publisher"].toString()
         params["Cover"] = bookCover
         val jsonObject = JSONObject(params as Map<*, *>)
 
