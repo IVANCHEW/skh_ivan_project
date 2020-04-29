@@ -4,7 +4,7 @@
             "outputFile": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-cs/values-cs.xml",
             "map": [
                 {
-                    "source": "/home/ivan/.gradle/caches/transforms-2/files-2.1/9075dbfaab39e40f8982b36dac1019b6/core-1.2.0/res/values-cs/values-cs.xml",
+                    "source": "/home/ivan/.gradle/caches/transforms-2/files-2.1/bc4cd32cb0aea761cc8763fddc70a769/core-1.3.0-rc01/res/values-cs/values-cs.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

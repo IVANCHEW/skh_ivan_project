@@ -8,6 +8,7 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Typeface
 import android.media.Image
 import android.os.Build
@@ -28,19 +29,25 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
+import androidx.core.view.marginBottom
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.applandeo.materialcalendarview.CalendarView
+import com.applandeo.materialcalendarview.EventDay
+import org.json.JSONArray
 import org.json.JSONObject
 import org.w3c.dom.Text
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import java.lang.String.format
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -49,6 +56,7 @@ class FirstFragment : Fragment() {
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
     private val REQUEST_IMAGE_CAPTURE = 1
+    private val YEAR_CONSTANT = 1900
     val bookParams = HashMap<String,String>()
 
     override fun onCreateView(
@@ -73,7 +81,7 @@ class FirstFragment : Fragment() {
 
         //Button to take picture
         view.findViewById<Button>(R.id.button_camera).setOnClickListener {
-            dispatchTakePictureIntent()
+            //dispatchTakePictureIntent()
         }
 
         //Button to initiate web service functions
@@ -110,6 +118,7 @@ class FirstFragment : Fragment() {
                         val bookTitle = bookObject.getString("Book_Title")
                         val bookAuthor = bookObject.getString("Book_Author")
                         val bookPublisher = bookObject.getString("Publisher")
+                        val bookId = bookObject.getString("Id")
 
                         //Retrieve the thumbnail AND create card
                         try {
@@ -120,7 +129,7 @@ class FirstFragment : Fragment() {
                             val bookThumbnail = BitmapFactory.decodeStream(decodeByte)
                             val reSizedBookThumbnail = resizeBitmap(bookThumbnail, 200, 300)
 
-                            createBookCard(bookTitle,bookAuthor,bookPublisher,reSizedBookThumbnail)
+                            createBookCard(bookTitle,bookAuthor,bookPublisher,reSizedBookThumbnail,bookId)
 
                             Log.i(TAG, "Manual Log, image creation card $i")
                         } catch (e: Exception){
@@ -132,7 +141,6 @@ class FirstFragment : Fragment() {
                 },
                 Response.ErrorListener { error ->
                     textview_output.text = "Error"
-                    Log.i(TAG, "Manual Log error")
                     Log.e(TAG, "Manual Log $error")
                     queue.stop()
                 }
@@ -171,7 +179,6 @@ class FirstFragment : Fragment() {
                 bookParams["book_Title"] = newbookTextInput[0].text.toString()
                 bookParams["book_Author"] = newbookTextInput[1].text.toString()
                 bookParams["Publisher"] = newbookTextInput[2].text.toString()
-
                 // Capture cover
                 dispatchTakePictureIntent()
             }
@@ -186,7 +193,7 @@ class FirstFragment : Fragment() {
 
     // Create a card view
     @SuppressLint("SetTextI18n")
-    private fun createBookCard(bookTitle: String, bookAuthor: String, bookPublisher:String, bookCover:Bitmap){
+    private fun createBookCard(bookTitle: String, bookAuthor: String, bookPublisher:String, bookCover:Bitmap, bookId:String){
         Log.i(TAG, "Manual Log, create book card")
         //Headers
         val bookLinearLayout = view!!.findViewById<LinearLayout>(R.id.book_Linear_Layout)
@@ -208,7 +215,7 @@ class FirstFragment : Fragment() {
 
         // Prepare the text
         val textLayout = LinearLayout(context)
-        textLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        textLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT)
         textLayout.orientation = LinearLayout.VERTICAL
 
@@ -226,10 +233,80 @@ class FirstFragment : Fragment() {
             textLayout.addView(textViewArray[i])
         }
 
-        cardLayout.addView(textLayout)
+        //Prepare Button
+        val rentButton = Button(context)
+        rentButton.text = "Rent"
+        rentButton.setTextColor(Color.WHITE)
+        rentButton.setBackgroundColor(Color.parseColor("#15ace8"))
+        rentButton.layoutParams = textviewLayoutParam
+        rentButton.setOnClickListener {
+            queryBookRentDates(bookId)
+        }
+        textLayout.addView(rentButton)
 
         //Add the generated card layout to the existing layout
+        cardLayout.addView(textLayout)
         bookLinearLayout.addView(cardLayout)
+    }
+
+    private fun queryBookRentDates(bookId: String){
+        Log.i(TAG, "Manual Log, query book rent dates with book id: $bookId")
+
+        // Instantiate the RequestQueue.
+        val queue = Volley.newRequestQueue(context)
+
+        // To retrieve book data
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_Rent_Dates?book_id=$bookId"
+
+        val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, null,
+            Response.Listener { response ->
+                val responseLength = response.length()
+                Log.i(TAG, "Manual Log, rent dates query responded with $responseLength")
+                if (responseLength==0){
+                    Toast.makeText(context, "No rental available", Toast.LENGTH_SHORT).show()
+                } else {
+                    showCalendar(response)
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Manual Log $error")
+                queue.stop()
+            })
+
+        queue.add(jsonArrayRequest)
+    }
+
+    private fun showCalendar(availableSlots: JSONArray){
+
+        val bookDetailsLayout = view!!.findViewById<LinearLayout>(R.id.book_Details_Layout)
+
+        //Create the calendarView object, choose the correct view to create
+        val bookCalendar = CalendarView(context!!)
+
+        //Create an array of eventDay objects that will be passed into the view
+        val availableEventDay: MutableList<EventDay> = ArrayList()
+        val dataCalendar: MutableList<Calendar> = ArrayList()
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+        for (i in 0 until availableSlots.length()) {
+            val slotObject = availableSlots.getJSONObject(i)
+            val slotDateTimeString = slotObject.getString("Date_Time")
+            Log.i(TAG, "Manual Log, Date: $slotDateTimeString")
+            val slotDate = sdf.parse(slotDateTimeString)
+            dataCalendar.add(Calendar.getInstance())
+            dataCalendar[i].set(slotDate.year + YEAR_CONSTANT, slotDate.month, slotDate.date)
+            availableEventDay.add(EventDay(dataCalendar[i], R.drawable.ic_dot))
+        }
+
+        //Modifying the calendarView object
+        bookCalendar.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        bookCalendar.setEvents(availableEventDay)
+
+        //What does highlight days do?
+        bookCalendar.setHighlightedDays(dataCalendar)
+        bookDetailsLayout.addView(bookCalendar)
+
     }
 
     // To initiate camera to take picture
@@ -267,13 +344,6 @@ class FirstFragment : Fragment() {
 
         val queue = Volley.newRequestQueue(context)
         Log.i(TAG, "Manual Log, book submission function called")
-
-        val ivanTestNumber: String = "8"
-        /*
-        val bookTitle: String = "Cat Book $ivanTestNumber"
-        val bookAuthor: String = "Cat Author $ivanTestNumber"
-        val publisher: String = "Cat Publisher $ivanTestNumber"
-         */
 
         val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_Book"
 
@@ -314,17 +384,12 @@ class FirstFragment : Fragment() {
                 Log.i(TAG, "Manual Log, received image capture response")
                 if (resultCode == RESULT_OK){
                     val imageBitmap = data?.extras?.get("data") as Bitmap
-                    val imageviewThumbnail = view?.findViewById<ImageView>(R.id.imageview_camera_thumbnail)
-                    if (imageviewThumbnail != null) {
-                        imageviewThumbnail.setImageBitmap(imageBitmap)
-
-                        Log.i(TAG, "Manual Log, processing image to string")
-                        val byteStream = ByteArrayOutputStream()
-                        imageBitmap.compress(Bitmap.CompressFormat.PNG,90,byteStream)
-                        val byteArray = byteStream.toByteArray()
-                        val imageData = Base64.encodeToString(byteArray, Base64.DEFAULT)
-                        submitBookDetails(imageData)
-                    }
+                    Log.i(TAG, "Manual Log, processing image to string")
+                    val byteStream = ByteArrayOutputStream()
+                    imageBitmap.compress(Bitmap.CompressFormat.PNG,90,byteStream)
+                    val byteArray = byteStream.toByteArray()
+                    val imageData = Base64.encodeToString(byteArray, Base64.DEFAULT)
+                    submitBookDetails(imageData)
                 }
             }
 
