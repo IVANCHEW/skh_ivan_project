@@ -1182,6 +1182,7 @@ id action_bar_subtitle
 id action_bar_title
 id action_container
 id action_context_bar
+id action_create_new_object
 id action_divider
 id action_image
 id action_menu_divider
@@ -1202,15 +1203,11 @@ id auto
 id barrier
 id beginning
 id blocking
-id book_Linear_Layout
 id book_Scrollview
 id bottom
 id buttonPanel
-id button_camera
-id button_new_object
-id button_rest_api
+id button_pull_data
 id button_second
-id button_speak
 id calendarContainer
 id calendarGridView
 id calendarHeader
@@ -1304,7 +1301,7 @@ id normal
 id notification_background
 id notification_main_column
 id notification_main_column_container
-id object_Calendar_Layout
+id object_List_Linear_Layout
 id off
 id on
 id one_day_picker
@@ -1538,6 +1535,7 @@ string abc_searchview_description_voice
 string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
+string action_create_new_object
 string action_settings
 string app_name
 string appbar_scrolling_view_behavior
@@ -1576,6 +1574,7 @@ string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
 string previous
+string pull_data
 string random
 string rest_api
 string search_menu_title

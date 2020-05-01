@@ -1,16 +1,43 @@
 package com.example.skh_ivan_app
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.ContentValues
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
+import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
+import android.text.InputType
+import android.util.Base64
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.webkit.WebViewFragment
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.android.volley.Request
 import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.util.HashMap
 
 class MainActivity : AppCompatActivity(){
+
+    private val newObjectParams = HashMap<String,String>()
+    private val REQUEST_IMAGE_CAPTURE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,12 +57,123 @@ class MainActivity : AppCompatActivity(){
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        when (item.itemId) {
+            R.id.action_create_new_object -> {
+                Log.i("Manual", "Manual Log, createNewObject, action_create_new_object clicked")
+                queryObjectCreateNew()
+                //val firstFragment = supportFragmentManager.findFragmentById(R.id.FirstFragment)
+                return true
+            }
+            R.id.action_settings -> {
+                Log.i("Manual", "Manual Log, createNewObject, action_settings clicked")
+                return true
+            }
+        }
+
         return when (item.itemId) {
             R.id.action_settings -> true
+            //R.id.action_create_new_object -> true
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private fun queryObjectCreateNew(){
+        Log.i(ContentValues.TAG, "Manual Log, queryObjectCreateNew, called")
+        //Construct the alert dialogue
+        val newObjectDialogue = AlertDialog.Builder(this)
+        newObjectDialogue.setTitle("Create New Workshop")
+
+        val dialogueLinearLayout = LinearLayout(this)
+        dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        dialogueLinearLayout.orientation = LinearLayout.VERTICAL
+        val newObjectTextInput = Array(4){ EditText(this) }
+        newObjectTextInput[0].hint = "Title"
+        newObjectTextInput[1].hint = "Cost"
+        newObjectTextInput[2].hint = "Length (hours)"
+        newObjectTextInput[3].hint = "Description"
+
+        for (i in newObjectTextInput.indices){
+            newObjectTextInput[i].inputType = InputType.TYPE_CLASS_TEXT
+            dialogueLinearLayout.addView(newObjectTextInput[i])
+        }
+
+        newObjectDialogue.setView(dialogueLinearLayout)
+
+        newObjectDialogue.setPositiveButton("Take Cover Picture"){ _, _ ->
+            // Do something when user press the positive button
+            Toast.makeText(this,"Please take a picture of the cover.", Toast.LENGTH_SHORT).show()
+            newObjectParams["Workshop_Name"] = newObjectTextInput[0].text.toString()
+            newObjectParams["Workshop_Cost"] = newObjectTextInput[1].text.toString()
+            newObjectParams["Workshop_Length"] = newObjectTextInput[2].text.toString()
+            newObjectParams["Workshop_Description"] = newObjectTextInput[3].text.toString()
+            // Capture cover
+            dispatchTakePictureIntent()
+        }
+
+        newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
+            Toast.makeText(this,"You cancelled the dialog.", Toast.LENGTH_SHORT).show()
+        }
+
+        newObjectDialogue.show()
+    }
+
+    private fun dispatchTakePictureIntent() {
+        val pm = this.packageManager
+        Log.i(ContentValues.TAG, "Manual Log, Camera function called")
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            Log.i(ContentValues.TAG, "Manual Log, start intent")
+            takePictureIntent.resolveActivity(pm)?.also {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode){
+
+            //For image retrieval
+            REQUEST_IMAGE_CAPTURE -> {
+                Log.i(ContentValues.TAG, "Manual Log, received image capture response")
+                if (resultCode == Activity.RESULT_OK){
+                    val imageBitmap = data?.extras?.get("data") as Bitmap
+                    Log.i(ContentValues.TAG, "Manual Log, processing image to string")
+                    val byteStream = ByteArrayOutputStream()
+                    imageBitmap.compress(Bitmap.CompressFormat.PNG,90,byteStream)
+                    val byteArray = byteStream.toByteArray()
+                    val imageData = Base64.encodeToString(byteArray, Base64.DEFAULT)
+                    createNewObject(imageData)
+                }
+            }
+
+        }
+    }
+
+    private fun createNewObject(imageString: String){
+
+        val queue = Volley.newRequestQueue(this)
+        Log.i(ContentValues.TAG, "Manual Log, book submission function called")
+
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_New_Workshop"
+
+        newObjectParams["Workshop_Cover"] = imageString
+
+        val jsonObject = JSONObject(newObjectParams as Map<*, *>)
+
+        Log.i(ContentValues.TAG, "Manual Log, request submitted: $url")
+
+        val request = JsonObjectRequest(
+            Request.Method.POST, url, jsonObject,
+            Response.Listener { response ->
+                Log.i(ContentValues.TAG, "Manual Log $response")
+            },
+            Response.ErrorListener { error ->
+                Log.i(ContentValues.TAG, "Manual Log: $error")
+            })
+
+        queue.add(request)
+    }
+
 }

@@ -19,4 +19,6 @@
     <string name="camera">Camera</string>
     <string name="new_book">New Book</string>
     <string name="object">New Object</string>
+    <string name="pull_data">Pull Data</string>
+    <string name="action_create_new_object">New Workshop</string>
 </resources>

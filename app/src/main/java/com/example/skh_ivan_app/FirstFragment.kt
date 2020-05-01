@@ -8,9 +8,6 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.Typeface
-import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,18 +15,13 @@ import android.speech.RecognizerIntent
 import android.text.InputType
 import android.util.Base64
 import android.util.Log
-import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
-import androidx.core.view.marginBottom
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
@@ -41,11 +33,9 @@ import com.applandeo.materialcalendarview.EventDay
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import org.json.JSONArray
 import org.json.JSONObject
-import org.w3c.dom.Text
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
-import java.lang.String.format
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.*
@@ -78,125 +68,9 @@ class FirstFragment : Fragment(), OnDayClickListener {
 
         super.onViewCreated(view, savedInstanceState)
 
-        //Button to initiate speaker functions
-        view.findViewById<Button>(R.id.button_speak).setOnClickListener{
-            speak()
-        }
-
-        //Button to take picture
-        view.findViewById<Button>(R.id.button_camera).setOnClickListener {
-            //dispatchTakePictureIntent()
-        }
-
-        //Button to call web service information
-        view.findViewById<Button>(R.id.button_rest_api).setOnClickListener {
-
-            //Show progress bar
-            val loadingBar = view.findViewById<ProgressBar>(R.id.progressBar1)
-            loadingBar.isVisible = true
-
-            val textview_output = view.findViewById<TextView>(R.id.textview_debug)
-
-            // Instantiate the RequestQueue.
-            val queue = Volley.newRequestQueue(context)
-
-            // To retrieve book data
-            //val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Book_List"
-            val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Available_Workshops"
-
-            val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, null,
-                Response.Listener { response ->
-
-                    // class Book(val bookTitle: String, val publisher: String, val bookAuthor: String)
-                    textview_output.text = "Response received"
-                    val responseLength = response.length()
-                    Log.i(TAG, "Manual Log, total data: $responseLength raw: $response")
-                    queue.stop()
-
-                    //Create this array to store each textview's ID
-                    for (i in 0..(responseLength-1)){
-
-                        //Obtain a single book object from the response
-                        val workshopObject = response.getJSONObject(i)
-
-                        //Retrieve the book title from the object
-                        val workshopName = workshopObject.getString("Workshop_Name")
-                        val workshopType = workshopObject.getString("Workshop_Type")
-                        val workshopCost = workshopObject.getDouble("Workshop_Cost")
-                        val workshopLength = workshopObject.getDouble("Workshop_Length")
-                        val workshopDescription = workshopObject.getString("Workshop_Description")
-                        val workshopID = workshopObject.getString("Id")
-
-                        //Retrieve the thumbnail AND create card
-                        try {
-                            //Decoding image from REST response
-                            val picData = workshopObject.getString("Workshop_Cover")
-                            val picByteArray = Base64.decode(picData,Base64.DEFAULT)
-                            val decodeByte = ByteArrayInputStream(picByteArray)
-                            val workshopThumbnail = BitmapFactory.decodeStream(decodeByte)
-                            val reSizedWorkshopThumbnail = resizeBitmap(workshopThumbnail, 400, 224)
-
-                            createWorkshopCard(workshopName,workshopType,workshopCost,workshopLength, workshopDescription, reSizedWorkshopThumbnail,workshopID)
-
-                            Log.i(TAG, "Manual Log, image creation card $i")
-                        } catch (e: Exception){
-                            Log.i(TAG, "Manual Log, image creation error: " + e.message)
-                        }
-                    }
-
-                    loadingBar.isVisible = false
-                },
-                Response.ErrorListener { error ->
-                    textview_output.text = "Error"
-                    Log.e(TAG, "Manual Log $error")
-                    queue.stop()
-                }
-            )
-
-            // Add the request to the RequestQueue.
-            queue.add(jsonArrayRequest)
-        }
-
         //Button to create new object with prompt
-        view.findViewById<Button>(R.id.button_new_object).setOnClickListener {
-
-            //Construct the alert dialogue
-            val newObjectDialogue = AlertDialog.Builder(context)
-            newObjectDialogue.setTitle("Create New Workshop")
-
-            val dialogueLinearLayout = LinearLayout(context)
-            dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT)
-            dialogueLinearLayout.orientation = LinearLayout.VERTICAL
-            val newObjectTextInput = Array(4){EditText(context)}
-            newObjectTextInput[0].hint = "Workshop Title"
-            newObjectTextInput[1].hint = "Workshop Cost"
-            newObjectTextInput[2].hint = "Workshop Length"
-            newObjectTextInput[3].hint = "Workshop Description"
-
-            for (i in newObjectTextInput.indices){
-                newObjectTextInput[i].inputType = InputType.TYPE_CLASS_TEXT
-                dialogueLinearLayout.addView(newObjectTextInput[i])
-            }
-
-            newObjectDialogue.setView(dialogueLinearLayout)
-
-            newObjectDialogue.setPositiveButton("Take Cover Picture"){ _, _ ->
-                // Do something when user press the positive button
-                Toast.makeText(context,"Please take a picture of the cover.",Toast.LENGTH_SHORT).show()
-                newObjectParams["Workshop_Name"] = newObjectTextInput[0].text.toString()
-                newObjectParams["Workshop_Cost"] = newObjectTextInput[1].text.toString()
-                newObjectParams["Workshop_Length"] = newObjectTextInput[2].text.toString()
-                newObjectParams["Workshop_Description"] = newObjectTextInput[3].text.toString()
-                // Capture cover
-                dispatchTakePictureIntent()
-            }
-
-            newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
-                Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
-            }
-
-            newObjectDialogue.show()
+        view.findViewById<Button>(R.id.button_pull_data).setOnClickListener {
+            queryWorkshopList()
         }
     }
 
@@ -208,56 +82,54 @@ class FirstFragment : Fragment(), OnDayClickListener {
                                    workshopID: String){
         Log.i(TAG, "Manual Log, create card")
         //Headers
-        val cardLinearLayout = view!!.findViewById<LinearLayout>(R.id.book_Linear_Layout)
+        val cardLinearLayout = view!!.findViewById<LinearLayout>(R.id.object_List_Linear_Layout)
+
+        //-Header: parameter used by button and textview
+        val textviewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.MATCH_PARENT)
+        textviewLayoutParam.setMargins(10, 10, 0, 0)
+
+        //-Header: parameter used by butt Imageview
+        val imageViewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        imageViewLayoutParam.setMargins(0, 0, 0, 0)
+
+        //-Header: parameter used by cardlayout
+        val cardLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        cardLayoutParam.setMargins(0, 30, 0, 30)
 
         // Create the parent layout
         val cardLayout = LinearLayout(context)
-        val cardLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT)
-        cardLayoutParam.setMargins(0, 30, 0, 30)
         cardLayout.layoutParams = cardLayoutParam
-        cardLayout.orientation = LinearLayout.HORIZONTAL
+        cardLayout.orientation = LinearLayout.VERTICAL
 
         // Add the book cover thumbnail
         val cardImageView = ImageView(context)
         cardImageView.setImageBitmap(reSizedWorkshopThumbnail)
-        val imageViewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT)
-        imageViewLayoutParam.setMargins(20, 20, 0, 0)
         cardImageView.layoutParams = imageViewLayoutParam
+        val customImageViewListener = View.OnClickListener {
+            Log.i(TAG, "On click listener called: $workshopID")
+            queryObjectDates(workshopID)
+        }
+        cardImageView.setOnClickListener(customImageViewListener)
         cardLayout.addView(cardImageView)
 
         // Prepare the text
         val textLayout = LinearLayout(context)
-        textLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT)
+        textLayout.layoutParams = textviewLayoutParam
         textLayout.orientation = LinearLayout.VERTICAL
 
-        val textViewArray = Array(4){TextView(context)}
-        val textviewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT)
-        textviewLayoutParam.setMargins(10, 10, 0, 0)
+        val textViewArray = Array(3){TextView(context)}
 
         textViewArray[0].text = workshopName
-        textViewArray[1].text = "Cost: $workshopCost"
-        textViewArray[2].text = "Duration: $workshopLength"
-        textViewArray[3].text = workshopDescription
+        textViewArray[1].text = workshopDescription
+        textViewArray[2].text = "(Cost: $workshopCost SGD) (Duration: $workshopLength hours)"
 
         for (i in textViewArray.indices) {
             textViewArray[i].layoutParams = textviewLayoutParam
             textLayout.addView(textViewArray[i])
         }
-
-        //Prepare Button
-        val actionButton1 = Button(context)
-        actionButton1.text = "Book"
-        actionButton1.setTextColor(Color.WHITE)
-        actionButton1.setBackgroundColor(Color.parseColor("#15ace8"))
-        actionButton1.layoutParams = textviewLayoutParam
-        actionButton1.setOnClickListener {
-            queryObjectDates(workshopID)
-        }
-        textLayout.addView(actionButton1)
 
         //Add the generated card layout to the existing layout
         cardLayout.addView(textLayout)
@@ -310,7 +182,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
                 if (responseLength==0){
                     Toast.makeText(context, "No available slots", Toast.LENGTH_SHORT).show()
                 } else {
-                    showTimeoptions(response)
+                    showTimeOptions(response)
                 }
             },
             Response.ErrorListener { error ->
@@ -321,10 +193,155 @@ class FirstFragment : Fragment(), OnDayClickListener {
         queue.add(jsonArrayRequest)
     }
 
+    private fun queryObjectBooking(objectId: Int, bookingQuantity: Int, bookingUsername: String,
+                                   bookingContactNumber: String, bookingEmail: String){
+        Log.i(TAG, "Manual Log, query object id: $objectId")
+
+        // Instantiate the RequestQueue.
+        val queue = Volley.newRequestQueue(context)
+
+        // To retrieve book data
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/" +
+                "Create_Workshop_Booking?" +
+                "Workshop_date_id=$objectId&" +
+                "Quantity=$bookingQuantity&" +
+                "Username=$bookingUsername" +
+                "&Contact_Number=$bookingContactNumber&" +
+                "Email=$bookingEmail"
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            Response.Listener<String> { response ->
+                Log.i(TAG, "Manual Log, queryObjectTime, response JSON array length: $response")
+                if (response!="ok"){
+                    Toast.makeText(context, "Error in response", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Booking Completed", Toast.LENGTH_SHORT).show()
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Manual Log, queryObjectTime, $error")
+                queue.stop()
+            })
+
+        queue.add(stringRequest)
+    }
+
+    private fun queryObjectCreateNew(){
+        Log.i(TAG, "Manual Log, queryObjectCreateNew, called")
+        //Construct the alert dialogue
+        val newObjectDialogue = AlertDialog.Builder(context)
+        newObjectDialogue.setTitle("Create New Workshop")
+
+        val dialogueLinearLayout = LinearLayout(context)
+        dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        dialogueLinearLayout.orientation = LinearLayout.VERTICAL
+        val newObjectTextInput = Array(4){EditText(context)}
+        newObjectTextInput[0].hint = "Title"
+        newObjectTextInput[1].hint = "Cost"
+        newObjectTextInput[2].hint = "Length (hours)"
+        newObjectTextInput[3].hint = "Description"
+
+        for (i in newObjectTextInput.indices){
+            newObjectTextInput[i].inputType = InputType.TYPE_CLASS_TEXT
+            dialogueLinearLayout.addView(newObjectTextInput[i])
+        }
+
+        newObjectDialogue.setView(dialogueLinearLayout)
+
+        newObjectDialogue.setPositiveButton("Take Cover Picture"){ _, _ ->
+            // Do something when user press the positive button
+            Toast.makeText(context,"Please take a picture of the cover.",Toast.LENGTH_SHORT).show()
+            newObjectParams["Workshop_Name"] = newObjectTextInput[0].text.toString()
+            newObjectParams["Workshop_Cost"] = newObjectTextInput[1].text.toString()
+            newObjectParams["Workshop_Length"] = newObjectTextInput[2].text.toString()
+            newObjectParams["Workshop_Description"] = newObjectTextInput[3].text.toString()
+            // Capture cover
+            dispatchTakePictureIntent()
+        }
+
+        newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
+            Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+        }
+
+        newObjectDialogue.show()
+    }
+
+    private fun queryWorkshopList(){
+        //Show progress bar
+        val loadingBar = view!!.findViewById<ProgressBar>(R.id.progressBar1)
+        loadingBar.isVisible = true
+
+        val textview_output = view!!.findViewById<TextView>(R.id.textview_debug)
+        val cardLayout = view!!.findViewById<LinearLayout>(R.id.object_List_Linear_Layout)
+        val viewWidth = cardLayout.width
+        val viewLength = viewWidth * 224 / 400
+
+        // Instantiate the RequestQueue.
+        val queue = Volley.newRequestQueue(context)
+
+        // To retrieve book data
+        //val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Book_List"
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Available_Workshops"
+
+        val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, null,
+            Response.Listener { response ->
+
+                // class Book(val bookTitle: String, val publisher: String, val bookAuthor: String)
+                textview_output.text = "Response received"
+                val responseLength = response.length()
+                Log.i(TAG, "Manual Log, total data: $responseLength raw: $response")
+                queue.stop()
+
+                //Create this array to store each textview's ID
+                for (i in 0..(responseLength-1)){
+
+                    //Obtain a single book object from the response
+                    val workshopObject = response.getJSONObject(i)
+
+                    //Retrieve the book title from the object
+                    val workshopName = workshopObject.getString("Workshop_Name")
+                    val workshopType = workshopObject.getString("Workshop_Type")
+                    val workshopCost = workshopObject.getDouble("Workshop_Cost")
+                    val workshopLength = workshopObject.getDouble("Workshop_Length")
+                    val workshopDescription = workshopObject.getString("Workshop_Description")
+                    val workshopID = workshopObject.getString("Id")
+
+                    //Retrieve the thumbnail AND create card
+                    try {
+                        //Decoding image from REST response
+                        val picData = workshopObject.getString("Workshop_Cover")
+                        val picByteArray = Base64.decode(picData,Base64.DEFAULT)
+                        val decodeByte = ByteArrayInputStream(picByteArray)
+                        val workshopThumbnail = BitmapFactory.decodeStream(decodeByte)
+                        val reSizedWorkshopThumbnail = resizeBitmap(workshopThumbnail, viewWidth, viewLength)
+
+                        createWorkshopCard(workshopName,workshopType,workshopCost,workshopLength, workshopDescription, reSizedWorkshopThumbnail,workshopID)
+
+                        Log.i(TAG, "Manual Log, image creation card $i")
+                    } catch (e: Exception){
+                        Log.i(TAG, "Manual Log, image creation error: " + e.message)
+                    }
+                }
+
+                loadingBar.isVisible = false
+            },
+            Response.ErrorListener { error ->
+                textview_output.text = "Error"
+                Log.e(TAG, "Manual Log $error")
+                queue.stop()
+            }
+        )
+
+        // Add the request to the RequestQueue.
+        queue.add(jsonArrayRequest)
+    }
+
     @SuppressLint("SimpleDateFormat")
     private fun showCalendar(availableSlots: JSONArray){
 
-        val objectCalendarLayout = view!!.findViewById<LinearLayout>(R.id.object_Calendar_Layout)
+        val calendarDialogue = AlertDialog.Builder(context)
+        calendarDialogue.setTitle("Available dates")
 
         //Create the calendarView object, choose the correct view to create
         val objectCalendar = CalendarView(context!!)
@@ -352,11 +369,15 @@ class FirstFragment : Fragment(), OnDayClickListener {
             LinearLayout.LayoutParams.WRAP_CONTENT)
 
         //Display the calendar
-        objectCalendarLayout.addView(objectCalendar)
+        calendarDialogue.setView(objectCalendar)
+        calendarDialogue.setNeutralButton("Cancel"){_,_ ->
+            Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+        }
+        calendarDialogue.show()
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showTimeoptions(availableSlots: JSONArray){
+    private fun showTimeOptions(availableSlots: JSONArray){
         Log.i(TAG, "Manual Log, show time slots available")
 
         //Headers
@@ -371,17 +392,75 @@ class FirstFragment : Fragment(), OnDayClickListener {
         dialogueLinearLayout.orientation = LinearLayout.VERTICAL
 
         //-Specify time options
-        val selectTimeTextView = Array(availableSlots.length()){TextView(context)}
+        val selectTimeRadioButton = Array(availableSlots.length()){RadioButton(context)}
+        val selectTimeRadioGroup = RadioGroup(context)
+        val RadioButtonParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        RadioButtonParams.setMargins(50, 0, 0, 0)
         for (i in 0 until availableSlots.length()){
             val slotObject = availableSlots.getJSONObject(i)
             val slotDateTimeString = slotObject.getString("Date_Time")
+            val slotObjectId = slotObject.getInt("Id")
+            Log.i(TAG, "Manual Log, showTimeOptions, radio button creation id: $slotObjectId")
             val slotDate = sdf.parse(slotDateTimeString)
-            selectTimeTextView[i].text = (slotDate.hours+GMT_STANDARD).toString() + ":" + slotDate.minutes.toString()
-            dialogueLinearLayout.addView(selectTimeTextView[i])
+
+            var hourString = ""
+            var minuteString = ""
+            if (slotDate.hours + GMT_STANDARD < 10) {
+                hourString = "0" + (slotDate.hours + GMT_STANDARD).toString()
+            } else {
+                hourString = (slotDate.hours + GMT_STANDARD).toString()
+            }
+            if (slotDate.minutes < 10){
+                minuteString = "0" + slotDate.minutes.toString()
+            }else{
+                minuteString = slotDate.minutes.toString()
+            }
+
+            selectTimeRadioButton[i].text = "$hourString : $minuteString"
+            selectTimeRadioButton[i].textSize = 20.0F
+            selectTimeRadioButton[i].id = slotObjectId
+            selectTimeRadioButton[i].layoutParams = RadioButtonParams
+            selectTimeRadioGroup.addView(selectTimeRadioButton[i])
+        }
+
+        //-Specify input options
+        val editTextArray = Array(4){EditText(context)}
+        val editTextParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        editTextParams.setMargins(50, 0, 100, 0)
+        editTextArray[0].setHint("Qty")
+        editTextArray[1].setHint("Username")
+        editTextArray[2].setHint("Contact Number")
+        editTextArray[3].setHint("Email")
+
+        //TEST: Temporary testing values
+        editTextArray[0].setText("3")
+        editTextArray[1].setText("Ivan Chew")
+        editTextArray[2].setText("94357250")
+        editTextArray[3].setText("ivanchew@pickmeet.com")
+
+        /*
+        selectTimeRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+            Log.i(TAG, "Manual Log, showTimeOptions, radio button selected: $checkedId")
+        }
+        */
+
+        dialogueLinearLayout.addView(selectTimeRadioGroup)
+        for (i in editTextArray.indices){
+            editTextArray[i].layoutParams = editTextParams
+            dialogueLinearLayout.addView(editTextArray[i])
         }
         selectTimeDialogue.setView(dialogueLinearLayout)
         selectTimeDialogue.setNeutralButton("Cancel"){_,_ ->
             Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+        }
+        selectTimeDialogue.setPositiveButton("Book"){ _, _ ->
+            Log.i(TAG, "Manual Log, showTimeoptions, booking button: " + selectTimeRadioGroup.checkedRadioButtonId)
+            queryObjectBooking(selectTimeRadioGroup.checkedRadioButtonId,editTextArray[0].text.toString().toInt(),
+                editTextArray[1].text.toString(),
+                editTextArray[2].text.toString(),
+                editTextArray[3].text.toString())
         }
         selectTimeDialogue.show()
     }
@@ -398,7 +477,8 @@ class FirstFragment : Fragment(), OnDayClickListener {
         }
     }
 
-    // To obtain voice input and perform text to voice recognition
+    // NOT IN USE To obtain voice input and perform text to voice recognition
+    /*
     private fun speak(){
         Log.i(TAG, "Manual Log, Speak function called")
         val mIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -415,6 +495,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
         }
     }
+     */
 
     // To create a new book data
     private fun createNewObject(imageString: String){
