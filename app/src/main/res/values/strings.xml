@@ -18,4 +18,5 @@
     <string name="for_debugging">For Debugging</string>
     <string name="camera">Camera</string>
     <string name="new_book">New Book</string>
+    <string name="object">New Object</string>
 </resources>

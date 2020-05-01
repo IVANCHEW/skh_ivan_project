@@ -43,10 +43,11 @@
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
-        android:id="@+id/book_Details_Layout"
+        android:id="@+id/object_Calendar_Layout"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:orientation="vertical"
+        android:animateLayoutChanges="true"
         app:layout_constraintTop_toBottomOf="@+id/book_Scrollview">
     </LinearLayout>
 
@@ -77,10 +78,10 @@
     />
 
     <Button
-        android:id="@+id/button_new_book"
+        android:id="@+id/button_new_object"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/new_book"
+        android:text="@string/object"
         app:layout_constraintLeft_toRightOf="@+id/button_rest_api"
         app:layout_constraintTop_toTopOf="@+id/button_rest_api"
     />

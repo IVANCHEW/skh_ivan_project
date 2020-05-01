@@ -38,6 +38,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
+import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import org.json.JSONArray
 import org.json.JSONObject
 import org.w3c.dom.Text
@@ -47,17 +48,20 @@ import java.lang.Exception
 import java.lang.String.format
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Calendar.*
 import kotlin.collections.ArrayList
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class FirstFragment : Fragment(), OnDayClickListener {
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
     private val REQUEST_IMAGE_CAPTURE = 1
     private val YEAR_CONSTANT = 1900
-    val bookParams = HashMap<String,String>()
+    private val newObjectParams = HashMap<String,String>()
+    private var ACTIVE_WORKSHOP_ID = ""
+    private val GMT_STANDARD = 8
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,7 +88,7 @@ class FirstFragment : Fragment() {
             //dispatchTakePictureIntent()
         }
 
-        //Button to initiate web service functions
+        //Button to call web service information
         view.findViewById<Button>(R.id.button_rest_api).setOnClickListener {
 
             //Show progress bar
@@ -97,7 +101,8 @@ class FirstFragment : Fragment() {
             val queue = Volley.newRequestQueue(context)
 
             // To retrieve book data
-            val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Book_List"
+            //val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Book_List"
+            val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Available_Workshops"
 
             val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, null,
                 Response.Listener { response ->
@@ -112,24 +117,26 @@ class FirstFragment : Fragment() {
                     for (i in 0..(responseLength-1)){
 
                         //Obtain a single book object from the response
-                        val bookObject = response.getJSONObject(i)
+                        val workshopObject = response.getJSONObject(i)
 
                         //Retrieve the book title from the object
-                        val bookTitle = bookObject.getString("Book_Title")
-                        val bookAuthor = bookObject.getString("Book_Author")
-                        val bookPublisher = bookObject.getString("Publisher")
-                        val bookId = bookObject.getString("Id")
+                        val workshopName = workshopObject.getString("Workshop_Name")
+                        val workshopType = workshopObject.getString("Workshop_Type")
+                        val workshopCost = workshopObject.getDouble("Workshop_Cost")
+                        val workshopLength = workshopObject.getDouble("Workshop_Length")
+                        val workshopDescription = workshopObject.getString("Workshop_Description")
+                        val workshopID = workshopObject.getString("Id")
 
                         //Retrieve the thumbnail AND create card
                         try {
                             //Decoding image from REST response
-                            val picData = bookObject.getString("Cover")
+                            val picData = workshopObject.getString("Workshop_Cover")
                             val picByteArray = Base64.decode(picData,Base64.DEFAULT)
                             val decodeByte = ByteArrayInputStream(picByteArray)
-                            val bookThumbnail = BitmapFactory.decodeStream(decodeByte)
-                            val reSizedBookThumbnail = resizeBitmap(bookThumbnail, 200, 300)
+                            val workshopThumbnail = BitmapFactory.decodeStream(decodeByte)
+                            val reSizedWorkshopThumbnail = resizeBitmap(workshopThumbnail, 400, 224)
 
-                            createBookCard(bookTitle,bookAuthor,bookPublisher,reSizedBookThumbnail,bookId)
+                            createWorkshopCard(workshopName,workshopType,workshopCost,workshopLength, workshopDescription, reSizedWorkshopThumbnail,workshopID)
 
                             Log.i(TAG, "Manual Log, image creation card $i")
                         } catch (e: Exception){
@@ -150,68 +157,75 @@ class FirstFragment : Fragment() {
             queue.add(jsonArrayRequest)
         }
 
-        //Button to create new book with prompt
-        view.findViewById<Button>(R.id.button_new_book).setOnClickListener {
+        //Button to create new object with prompt
+        view.findViewById<Button>(R.id.button_new_object).setOnClickListener {
 
             //Construct the alert dialogue
-            val newBookDialogue = AlertDialog.Builder(context)
-            newBookDialogue.setTitle("Create New Book")
+            val newObjectDialogue = AlertDialog.Builder(context)
+            newObjectDialogue.setTitle("Create New Workshop")
 
-            val DialogueLinearLayout = LinearLayout(context)
-            DialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            val dialogueLinearLayout = LinearLayout(context)
+            dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT)
-            DialogueLinearLayout.orientation = LinearLayout.VERTICAL
-            val newbookTextInput = Array(3){EditText(context)}
-            newbookTextInput[0].setHint("Book title")
-            newbookTextInput[1].setHint("Author")
-            newbookTextInput[2].setHint("Publisher")
+            dialogueLinearLayout.orientation = LinearLayout.VERTICAL
+            val newObjectTextInput = Array(4){EditText(context)}
+            newObjectTextInput[0].hint = "Workshop Title"
+            newObjectTextInput[1].hint = "Workshop Cost"
+            newObjectTextInput[2].hint = "Workshop Length"
+            newObjectTextInput[3].hint = "Workshop Description"
 
-            for (i in newbookTextInput.indices){
-                newbookTextInput[i].inputType = InputType.TYPE_CLASS_TEXT
-                DialogueLinearLayout.addView(newbookTextInput[i])
+            for (i in newObjectTextInput.indices){
+                newObjectTextInput[i].inputType = InputType.TYPE_CLASS_TEXT
+                dialogueLinearLayout.addView(newObjectTextInput[i])
             }
 
-            newBookDialogue.setView(DialogueLinearLayout)
+            newObjectDialogue.setView(dialogueLinearLayout)
 
-            newBookDialogue.setPositiveButton("Take Cover Picture"){ _, _ ->
+            newObjectDialogue.setPositiveButton("Take Cover Picture"){ _, _ ->
                 // Do something when user press the positive button
                 Toast.makeText(context,"Please take a picture of the cover.",Toast.LENGTH_SHORT).show()
-                bookParams["book_Title"] = newbookTextInput[0].text.toString()
-                bookParams["book_Author"] = newbookTextInput[1].text.toString()
-                bookParams["Publisher"] = newbookTextInput[2].text.toString()
+                newObjectParams["Workshop_Name"] = newObjectTextInput[0].text.toString()
+                newObjectParams["Workshop_Cost"] = newObjectTextInput[1].text.toString()
+                newObjectParams["Workshop_Length"] = newObjectTextInput[2].text.toString()
+                newObjectParams["Workshop_Description"] = newObjectTextInput[3].text.toString()
                 // Capture cover
                 dispatchTakePictureIntent()
             }
 
-            newBookDialogue.setNeutralButton("Cancel"){_,_ ->
+            newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
                 Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
             }
 
-            newBookDialogue.show()
+            newObjectDialogue.show()
         }
     }
 
     // Create a card view
     @SuppressLint("SetTextI18n")
-    private fun createBookCard(bookTitle: String, bookAuthor: String, bookPublisher:String, bookCover:Bitmap, bookId:String){
-        Log.i(TAG, "Manual Log, create book card")
+    private fun createWorkshopCard(workshopName: String,workshopType: String,workshopCost: Double,
+                                   workshopLength: Double, workshopDescription: String,
+                                   reSizedWorkshopThumbnail: Bitmap,
+                                   workshopID: String){
+        Log.i(TAG, "Manual Log, create card")
         //Headers
-        val bookLinearLayout = view!!.findViewById<LinearLayout>(R.id.book_Linear_Layout)
+        val cardLinearLayout = view!!.findViewById<LinearLayout>(R.id.book_Linear_Layout)
 
         // Create the parent layout
         val cardLayout = LinearLayout(context)
-        cardLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT)
+        val cardLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT)
+        cardLayoutParam.setMargins(0, 30, 0, 30)
+        cardLayout.layoutParams = cardLayoutParam
         cardLayout.orientation = LinearLayout.HORIZONTAL
 
         // Add the book cover thumbnail
-        val bookImageView = ImageView(context)
-        bookImageView.setImageBitmap(bookCover)
+        val cardImageView = ImageView(context)
+        cardImageView.setImageBitmap(reSizedWorkshopThumbnail)
         val imageViewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT)
         imageViewLayoutParam.setMargins(20, 20, 0, 0)
-        bookImageView.layoutParams = imageViewLayoutParam
-        cardLayout.addView(bookImageView)
+        cardImageView.layoutParams = imageViewLayoutParam
+        cardLayout.addView(cardImageView)
 
         // Prepare the text
         val textLayout = LinearLayout(context)
@@ -219,14 +233,15 @@ class FirstFragment : Fragment() {
             LinearLayout.LayoutParams.WRAP_CONTENT)
         textLayout.orientation = LinearLayout.VERTICAL
 
-        val textViewArray = Array(3){TextView(context)}
+        val textViewArray = Array(4){TextView(context)}
         val textviewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT)
         textviewLayoutParam.setMargins(10, 10, 0, 0)
 
-        textViewArray[0].text = bookTitle
-        textViewArray[1].text = "By $bookAuthor"
-        textViewArray[2].text = "Publisher: $bookPublisher"
+        textViewArray[0].text = workshopName
+        textViewArray[1].text = "Cost: $workshopCost"
+        textViewArray[2].text = "Duration: $workshopLength"
+        textViewArray[3].text = workshopDescription
 
         for (i in textViewArray.indices) {
             textViewArray[i].layoutParams = textviewLayoutParam
@@ -234,36 +249,39 @@ class FirstFragment : Fragment() {
         }
 
         //Prepare Button
-        val rentButton = Button(context)
-        rentButton.text = "Rent"
-        rentButton.setTextColor(Color.WHITE)
-        rentButton.setBackgroundColor(Color.parseColor("#15ace8"))
-        rentButton.layoutParams = textviewLayoutParam
-        rentButton.setOnClickListener {
-            queryBookRentDates(bookId)
+        val actionButton1 = Button(context)
+        actionButton1.text = "Book"
+        actionButton1.setTextColor(Color.WHITE)
+        actionButton1.setBackgroundColor(Color.parseColor("#15ace8"))
+        actionButton1.layoutParams = textviewLayoutParam
+        actionButton1.setOnClickListener {
+            queryObjectDates(workshopID)
         }
-        textLayout.addView(rentButton)
+        textLayout.addView(actionButton1)
 
         //Add the generated card layout to the existing layout
         cardLayout.addView(textLayout)
-        bookLinearLayout.addView(cardLayout)
+        cardLinearLayout.addView(cardLayout)
     }
 
-    private fun queryBookRentDates(bookId: String){
-        Log.i(TAG, "Manual Log, query book rent dates with book id: $bookId")
+    private fun queryObjectDates(objectId: String){
+        Log.i(TAG, "Manual Log, query object id: $objectId")
+
+        //Set active workshop id
+        ACTIVE_WORKSHOP_ID = objectId
 
         // Instantiate the RequestQueue.
         val queue = Volley.newRequestQueue(context)
 
         // To retrieve book data
-        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_Rent_Dates?book_id=$bookId"
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_Workshop_Dates?workshop_id=$ACTIVE_WORKSHOP_ID"
 
         val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, null,
             Response.Listener { response ->
                 val responseLength = response.length()
-                Log.i(TAG, "Manual Log, rent dates query responded with $responseLength")
+                Log.i(TAG, "Manual Log, response JSON array length: $responseLength")
                 if (responseLength==0){
-                    Toast.makeText(context, "No rental available", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "No available dates", Toast.LENGTH_SHORT).show()
                 } else {
                     showCalendar(response)
                 }
@@ -276,37 +294,96 @@ class FirstFragment : Fragment() {
         queue.add(jsonArrayRequest)
     }
 
+    private fun queryObjectTime(dateQuery: String){
+        // Instantiate the RequestQueue.
+        Log.i(TAG, "Manual Log, query object time: $dateQuery")
+        val queue = Volley.newRequestQueue(context)
+
+        // To retrieve book data
+        val url =
+            "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_Workshop_Time?workshop_id=$ACTIVE_WORKSHOP_ID&date=$dateQuery"
+
+        val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, null,
+            Response.Listener { response ->
+                val responseLength = response.length()
+                Log.i(TAG, "Manual Log, response JSON array length: $responseLength")
+                if (responseLength==0){
+                    Toast.makeText(context, "No available slots", Toast.LENGTH_SHORT).show()
+                } else {
+                    showTimeoptions(response)
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Manual Log $error")
+                queue.stop()
+            })
+
+        queue.add(jsonArrayRequest)
+    }
+
+    @SuppressLint("SimpleDateFormat")
     private fun showCalendar(availableSlots: JSONArray){
 
-        val bookDetailsLayout = view!!.findViewById<LinearLayout>(R.id.book_Details_Layout)
+        val objectCalendarLayout = view!!.findViewById<LinearLayout>(R.id.object_Calendar_Layout)
 
         //Create the calendarView object, choose the correct view to create
-        val bookCalendar = CalendarView(context!!)
+        val objectCalendar = CalendarView(context!!)
 
         //Create an array of eventDay objects that will be passed into the view
         val availableEventDay: MutableList<EventDay> = ArrayList()
         val dataCalendar: MutableList<Calendar> = ArrayList()
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
+        //Specify the dates to annotate on the calendar view
         for (i in 0 until availableSlots.length()) {
             val slotObject = availableSlots.getJSONObject(i)
             val slotDateTimeString = slotObject.getString("Date_Time")
             Log.i(TAG, "Manual Log, Date: $slotDateTimeString")
             val slotDate = sdf.parse(slotDateTimeString)
             dataCalendar.add(Calendar.getInstance())
-            dataCalendar[i].set(slotDate.year + YEAR_CONSTANT, slotDate.month, slotDate.date)
+            dataCalendar[i].time = slotDate!!
             availableEventDay.add(EventDay(dataCalendar[i], R.drawable.ic_dot))
         }
+        objectCalendar.setEvents(availableEventDay)
+        objectCalendar.setOnDayClickListener(this)
 
-        //Modifying the calendarView object
-        bookCalendar.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        //Modifying the calendarView display
+        objectCalendar.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT)
-        bookCalendar.setEvents(availableEventDay)
 
-        //What does highlight days do?
-        bookCalendar.setHighlightedDays(dataCalendar)
-        bookDetailsLayout.addView(bookCalendar)
+        //Display the calendar
+        objectCalendarLayout.addView(objectCalendar)
+    }
 
+    @SuppressLint("SetTextI18n")
+    private fun showTimeoptions(availableSlots: JSONArray){
+        Log.i(TAG, "Manual Log, show time slots available")
+
+        //Headers
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+        //Build dialogue options
+        val selectTimeDialogue = AlertDialog.Builder(context)
+        selectTimeDialogue.setTitle("Select Time Slot")
+        val dialogueLinearLayout = LinearLayout(context)
+        dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        dialogueLinearLayout.orientation = LinearLayout.VERTICAL
+
+        //-Specify time options
+        val selectTimeTextView = Array(availableSlots.length()){TextView(context)}
+        for (i in 0 until availableSlots.length()){
+            val slotObject = availableSlots.getJSONObject(i)
+            val slotDateTimeString = slotObject.getString("Date_Time")
+            val slotDate = sdf.parse(slotDateTimeString)
+            selectTimeTextView[i].text = (slotDate.hours+GMT_STANDARD).toString() + ":" + slotDate.minutes.toString()
+            dialogueLinearLayout.addView(selectTimeTextView[i])
+        }
+        selectTimeDialogue.setView(dialogueLinearLayout)
+        selectTimeDialogue.setNeutralButton("Cancel"){_,_ ->
+            Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+        }
+        selectTimeDialogue.show()
     }
 
     // To initiate camera to take picture
@@ -340,20 +417,16 @@ class FirstFragment : Fragment() {
     }
 
     // To create a new book data
-    private fun submitBookDetails(bookCover: String){
+    private fun createNewObject(imageString: String){
 
         val queue = Volley.newRequestQueue(context)
         Log.i(TAG, "Manual Log, book submission function called")
 
-        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_Book"
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_New_Workshop"
 
-        //Submit through body
-        val params = HashMap<String,String>()
-        params["book_Title"] = bookParams["book_Title"].toString()
-        params["book_Author"] = bookParams["book_Author"].toString()
-        params["Publisher"] = bookParams["Publisher"].toString()
-        params["Cover"] = bookCover
-        val jsonObject = JSONObject(params as Map<*, *>)
+        newObjectParams["Workshop_Cover"] = imageString
+
+        val jsonObject = JSONObject(newObjectParams as Map<*, *>)
 
         Log.i(TAG, "Manual Log, request submitted: $url")
 
@@ -389,7 +462,7 @@ class FirstFragment : Fragment() {
                     imageBitmap.compress(Bitmap.CompressFormat.PNG,90,byteStream)
                     val byteArray = byteStream.toByteArray()
                     val imageData = Base64.encodeToString(byteArray, Base64.DEFAULT)
-                    submitBookDetails(imageData)
+                    createNewObject(imageData)
                 }
             }
 
@@ -406,6 +479,12 @@ class FirstFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDayClick(eventDay: EventDay) {
+        queryObjectTime(eventDay.calendar.get(YEAR).toString()
+                + "-" + (eventDay.calendar.get(MONTH)+1).toString()
+                + "-" + eventDay.calendar.get(DATE).toString())
     }
 
 }

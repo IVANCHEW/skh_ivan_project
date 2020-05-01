@@ -1202,13 +1202,12 @@ id auto
 id barrier
 id beginning
 id blocking
-id book_Details_Layout
 id book_Linear_Layout
 id book_Scrollview
 id bottom
 id buttonPanel
 id button_camera
-id button_new_book
+id button_new_object
 id button_rest_api
 id button_second
 id button_speak
@@ -1305,6 +1304,7 @@ id normal
 id notification_background
 id notification_main_column
 id notification_main_column_container
+id object_Calendar_Layout
 id off
 id on
 id one_day_picker
@@ -1569,6 +1569,7 @@ string nav_app_bar_open_drawer_description
 string new_book
 string next
 string no_recognition_available
+string object
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through
