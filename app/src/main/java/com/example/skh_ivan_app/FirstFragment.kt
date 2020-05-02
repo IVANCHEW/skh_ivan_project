@@ -2,7 +2,6 @@ package com.example.skh_ivan_app
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Intent
@@ -10,9 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.speech.RecognizerIntent
-import android.text.InputType
 import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -34,7 +31,6 @@ import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,11 +43,18 @@ import kotlin.collections.ArrayList
 class FirstFragment : Fragment(), OnDayClickListener {
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
-    private val REQUEST_IMAGE_CAPTURE = 1
-    private val YEAR_CONSTANT = 1900
     private val newObjectParams = HashMap<String,String>()
     private var ACTIVE_WORKSHOP_ID = ""
     private val GMT_STANDARD = 8
+    private var FIRST_LOAD = true
+
+
+    //Not in use
+    /*
+    private val REQUEST_IMAGE_CAPTURE = 1
+    private val YEAR_CONSTANT = 1900
+
+     */
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,10 +71,19 @@ class FirstFragment : Fragment(), OnDayClickListener {
 
         super.onViewCreated(view, savedInstanceState)
 
-        //Button to create new object with prompt
-        view.findViewById<Button>(R.id.button_pull_data).setOnClickListener {
-            queryWorkshopList()
+        view.viewTreeObserver.addOnGlobalLayoutListener {
+
+            if(FIRST_LOAD){
+                Log.i(TAG, "Manual Log, onViewCreated, FIRST LOAD called     ")
+                FIRST_LOAD = false
+                queryWorkshopList()
+            }
         }
+
+        //Button to create new object with prompt
+        /*view.findViewById<Button>(R.id.button_pull_data).setOnClickListener {
+            queryWorkshopList()
+        }*/
     }
 
     // Create a card view
@@ -178,7 +190,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
         val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, null,
             Response.Listener { response ->
                 val responseLength = response.length()
-                Log.i(TAG, "Manual Log, response JSON array length: $responseLength")
+                Log.i(TAG, "Manual Log, response JSON array length: $responseLength, response: $response")
                 if (responseLength==0){
                     Toast.makeText(context, "No available slots", Toast.LENGTH_SHORT).show()
                 } else {
@@ -226,6 +238,8 @@ class FirstFragment : Fragment(), OnDayClickListener {
         queue.add(stringRequest)
     }
 
+    /*
+    //Function moved to main activity
     private fun queryObjectCreateNew(){
         Log.i(TAG, "Manual Log, queryObjectCreateNew, called")
         //Construct the alert dialogue
@@ -266,13 +280,14 @@ class FirstFragment : Fragment(), OnDayClickListener {
 
         newObjectDialogue.show()
     }
+     */
 
     private fun queryWorkshopList(){
         //Show progress bar
+        Log.i(TAG, "Manual Log, queryWorkshopList, called")
         val loadingBar = view!!.findViewById<ProgressBar>(R.id.progressBar1)
         loadingBar.isVisible = true
 
-        val textview_output = view!!.findViewById<TextView>(R.id.textview_debug)
         val cardLayout = view!!.findViewById<LinearLayout>(R.id.object_List_Linear_Layout)
         val viewWidth = cardLayout.width
         val viewLength = viewWidth * 224 / 400
@@ -281,20 +296,18 @@ class FirstFragment : Fragment(), OnDayClickListener {
         val queue = Volley.newRequestQueue(context)
 
         // To retrieve book data
-        //val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Book_List"
         val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Available_Workshops"
 
         val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, null,
             Response.Listener { response ->
 
                 // class Book(val bookTitle: String, val publisher: String, val bookAuthor: String)
-                textview_output.text = "Response received"
                 val responseLength = response.length()
                 Log.i(TAG, "Manual Log, total data: $responseLength raw: $response")
                 queue.stop()
 
                 //Create this array to store each textview's ID
-                for (i in 0..(responseLength-1)){
+                for (i in 0 until responseLength){
 
                     //Obtain a single book object from the response
                     val workshopObject = response.getJSONObject(i)
@@ -327,7 +340,6 @@ class FirstFragment : Fragment(), OnDayClickListener {
                 loadingBar.isVisible = false
             },
             Response.ErrorListener { error ->
-                textview_output.text = "Error"
                 Log.e(TAG, "Manual Log $error")
                 queue.stop()
             }
@@ -378,7 +390,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
 
     @SuppressLint("SetTextI18n")
     private fun showTimeOptions(availableSlots: JSONArray){
-        Log.i(TAG, "Manual Log, show time slots available")
+        Log.i(TAG, "Manual Log, showTimeOptions, $availableSlots")
 
         //Headers
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
@@ -400,7 +412,15 @@ class FirstFragment : Fragment(), OnDayClickListener {
         for (i in 0 until availableSlots.length()){
             val slotObject = availableSlots.getJSONObject(i)
             val slotDateTimeString = slotObject.getString("Date_Time")
+            var slotAvailable = 0
+
             val slotObjectId = slotObject.getInt("Id")
+            try {
+                slotAvailable = slotObject.getInt("Slots_Available")
+            } catch (e: Exception){
+                Log.i(TAG, "Manual Log, showTimeOptions, JSON error does not have the property: Slots_Available ")
+            }
+
             Log.i(TAG, "Manual Log, showTimeOptions, radio button creation id: $slotObjectId")
             val slotDate = sdf.parse(slotDateTimeString)
 
@@ -417,7 +437,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
                 minuteString = slotDate.minutes.toString()
             }
 
-            selectTimeRadioButton[i].text = "$hourString : $minuteString"
+            selectTimeRadioButton[i].text = "$hourString : $minuteString     (Slots: $slotAvailable)"
             selectTimeRadioButton[i].textSize = 20.0F
             selectTimeRadioButton[i].id = slotObjectId
             selectTimeRadioButton[i].layoutParams = RadioButtonParams
@@ -465,7 +485,8 @@ class FirstFragment : Fragment(), OnDayClickListener {
         selectTimeDialogue.show()
     }
 
-    // To initiate camera to take picture
+    /*
+    //Function moved to main activity. To initiate camera to take picture
     private fun dispatchTakePictureIntent() {
         val pm = context!!.packageManager
         Log.i(TAG, "Manual Log, Camera function called")
@@ -476,6 +497,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
             }
         }
     }
+    */
 
     // NOT IN USE To obtain voice input and perform text to voice recognition
     /*
@@ -530,10 +552,11 @@ class FirstFragment : Fragment(), OnDayClickListener {
     // Listeners and callback for receiving speech and picture
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val outputText = view?.findViewById<TextView>(R.id.textview_debug)
         when (requestCode){
 
-            //For image retrieval
+
+            //Moved to main activity, not in use. For image retrieval
+            /*
             REQUEST_IMAGE_CAPTURE -> {
                 Log.i(TAG, "Manual Log, received image capture response")
                 if (resultCode == RESULT_OK){
@@ -546,6 +569,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
                     createNewObject(imageData)
                 }
             }
+            */
 
             //For speech retrieval
             REQUEST_CODE_SPEECH_INPUT -> {
@@ -553,9 +577,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
 
                     //get text from result
                     val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                    if (outputText != null) {
-                        outputText.text = result[0]
-                    }
+                    Log.i(TAG, "Manual Log, codeSpeechInputResult, " + result[0])
 
                 }
             }

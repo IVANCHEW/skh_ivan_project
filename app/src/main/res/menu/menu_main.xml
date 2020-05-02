@@ -8,6 +8,11 @@
         android:title="@string/action_create_new_object"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_my_dates"
+        android:orderInCategory="100"
+        android:title="@string/action_my_dates"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"

@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity(){
 
     private val newObjectParams = HashMap<String,String>()
     private val REQUEST_IMAGE_CAPTURE = 1
+    private val TAG = "MANUAL"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +63,13 @@ class MainActivity : AppCompatActivity(){
             R.id.action_create_new_object -> {
                 Log.i("Manual", "Manual Log, createNewObject, action_create_new_object clicked")
                 queryObjectCreateNew()
-                //val firstFragment = supportFragmentManager.findFragmentById(R.id.FirstFragment)
+                return true
+            }
+            R.id.action_my_dates -> {
+                Log.i("Manual", "Manual Log, createNewObject, action_my_dates clicked")
+                //Temporary TEST value
+                val hostName = "Ivan Chew"
+                queryAllWorkshopDates(hostName)
                 return true
             }
             R.id.action_settings -> {
@@ -117,6 +125,38 @@ class MainActivity : AppCompatActivity(){
         }
 
         newObjectDialogue.show()
+    }
+
+    private fun queryAllWorkshopDates(hostName: String){
+
+        Log.i(TAG, "Manual Log, queryAllWorkshopDates, called")
+        val queue = Volley.newRequestQueue(this)
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_Host_All_Workshops_Dates?Host_Name=$hostName"
+        val request = JsonArrayRequest(
+            Request.Method.POST, url, null, Response.Listener {response ->
+                if (response.length()==0){
+                    Toast.makeText(this,"There are no workshop dates created by host.", Toast.LENGTH_LONG).show()
+                }else{
+                    for (i in 0 until response.length()){
+                        val workshopStructure = response.getJSONObject(i)
+                        val workshopObject = workshopStructure.getJSONObject("Workshop")
+                        val datesList = workshopStructure.getJSONArray("Dates")
+                        val workshopTitle = workshopObject.getString("Workshop_Name")
+                        Log.i(TAG, "$workshopTitle")
+                        for (j in 0 until datesList.length()){
+                            val workshopDateObject = datesList.getJSONObject(j)
+                            val workshopDate = workshopDateObject.getString("Date_Time")
+                            val workshopSlotsAvailable = workshopDateObject.getString("Slots_Available")
+                        }
+                    }
+                }
+                queue.stop()
+            }, Response.ErrorListener { error ->
+                Log.i(TAG, "Manual Log, queryAllWorkshopDates, request error callback: $error")
+                queue.stop()
+            }
+        )
+        queue.add(request)
     }
 
     private fun dispatchTakePictureIntent() {

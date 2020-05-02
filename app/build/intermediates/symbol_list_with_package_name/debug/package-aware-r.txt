@@ -1112,6 +1112,7 @@ drawable ic_launcher_foreground
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
+drawable logo
 drawable mtrl_snackbar_background
 drawable mtrl_tabs_default_indicator
 drawable navigation_empty_icon
@@ -1190,6 +1191,7 @@ id action_menu_presenter
 id action_mode_bar
 id action_mode_bar_stub
 id action_mode_close_button
+id action_my_dates
 id action_settings
 id action_text
 id actions
@@ -1206,7 +1208,6 @@ id blocking
 id book_Scrollview
 id bottom
 id buttonPanel
-id button_pull_data
 id button_second
 id calendarContainer
 id calendarGridView
@@ -1270,6 +1271,7 @@ id icon
 id icon_group
 id ifRoom
 id image
+id imageViewLogo
 id info
 id invisible
 id italic
@@ -1385,7 +1387,6 @@ id text_input_password_toggle
 id textinput_counter
 id textinput_error
 id textinput_helper_text
-id textview_debug
 id textview_second
 id thursdayLabel
 id time
@@ -1536,9 +1537,11 @@ string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
 string action_create_new_object
+string action_my_dates
 string action_settings
 string app_name
 string appbar_scrolling_view_behavior
+string application_logo
 string bottom_sheet_behavior
 string camera
 string character_counter_content_description

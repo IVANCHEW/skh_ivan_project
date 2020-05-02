@@ -8,12 +8,12 @@
         "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/layout/fragment_first.xml"
     },
     {
-        "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/navigation_nav_graph.xml.flat",
-        "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/navigation/nav_graph.xml"
-    },
-    {
         "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/drawable-v24_ic_launcher_foreground.xml.flat",
         "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/drawable-v24/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/navigation_nav_graph.xml.flat",
+        "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/navigation/nav_graph.xml"
     },
     {
         "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/drawable-hdpi_ic_launcher_background.png.flat",
@@ -94,6 +94,10 @@
     {
         "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/mipmap-xxhdpi_ic_launcher_round.png.flat",
         "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/drawable-v24_logo.png.flat",
+        "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/drawable-v24/logo.png"
     },
     {
         "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/mipmap-xxxhdpi_ic_launcher_round.png.flat",
