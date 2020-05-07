@@ -427,6 +427,20 @@ attr listPreferredItemPaddingRight
 attr listPreferredItemPaddingStart
 attr logo
 attr logoDescription
+attr lottie_autoPlay
+attr lottie_colorFilter
+attr lottie_enableMergePathsForKitKatAndAbove
+attr lottie_fileName
+attr lottie_imageAssetsFolder
+attr lottie_loop
+attr lottie_progress
+attr lottie_rawRes
+attr lottie_renderMode
+attr lottie_repeatCount
+attr lottie_repeatMode
+attr lottie_scale
+attr lottie_speed
+attr lottie_url
 attr materialButtonStyle
 attr materialCardViewStyle
 attr maxActionInlineWidth
@@ -661,6 +675,7 @@ color accent_material_dark
 color accent_material_light
 color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
+color backgroundColor
 color background_floating_material_dark
 color background_floating_material_light
 color background_material_dark
@@ -706,6 +721,7 @@ color error_color_material_dark
 color error_color_material_light
 color foreground_material_dark
 color foreground_material_light
+color highlightColor
 color highlighted_text_material_dark
 color highlighted_text_material_light
 color itemFocusedColor
@@ -774,6 +790,7 @@ color switch_thumb_normal_material_dark
 color switch_thumb_normal_material_light
 color tooltip_background_dark
 color tooltip_background_light
+color transparentToolbar
 dimen abc_action_bar_content_inset_material
 dimen abc_action_bar_content_inset_with_nav
 dimen abc_action_bar_default_height_material
@@ -1113,6 +1130,7 @@ drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
 drawable logo
+drawable logo_balloon
 drawable mtrl_snackbar_background
 drawable mtrl_tabs_default_indicator
 drawable navigation_empty_icon
@@ -1202,13 +1220,13 @@ id all
 id always
 id async
 id auto
+id automatic
 id barrier
 id beginning
 id blocking
 id book_Scrollview
 id bottom
 id buttonPanel
-id button_second
 id calendarContainer
 id calendarGridView
 id calendarHeader
@@ -1253,6 +1271,7 @@ id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
 id fab
+id fab_see_bookings
 id fill
 id fill_horizontal
 id fill_vertical
@@ -1265,6 +1284,7 @@ id ghost_view
 id gone
 id group_divider
 id groups
+id hardware
 id home
 id homeAsUp
 id icon
@@ -1283,6 +1303,7 @@ id line1
 id line3
 id listMode
 id list_item
+id lottie_layer_name
 id many_days_picker
 id masked
 id message
@@ -1304,6 +1325,7 @@ id notification_background
 id notification_main_column
 id notification_main_column_container
 id object_List_Linear_Layout
+id object_List_Linear_Layout_SecondFragment
 id off
 id on
 id one_day_picker
@@ -1318,10 +1340,13 @@ id pin
 id positiveButton
 id previousButton
 id progressBar1
+id progressBar2
 id progress_circular
 id progress_horizontal
 id radio
 id range_picker
+id restart
+id reverse
 id right
 id right_icon
 id right_side
@@ -1331,6 +1356,7 @@ id save_non_transition_alpha
 id save_scale_type
 id screen
 id scroll
+id scrollDownAnimation
 id scrollIndicatorDown
 id scrollIndicatorUp
 id scrollView
@@ -1356,6 +1382,7 @@ id snackbar_action
 id snackbar_text
 id snap
 id snapMargins
+id software
 id spacer
 id split_action_bar
 id spread
@@ -1387,14 +1414,12 @@ id text_input_password_toggle
 id textinput_counter
 id textinput_error
 id textinput_helper_text
-id textview_second
 id thursdayLabel
 id time
 id title
 id titleDividerNoCustom
 id title_template
 id todayButton
-id toolbar
 id top
 id topPanel
 id touch_outside
@@ -2139,6 +2164,7 @@ styleable LinearConstraintLayout android_orientation
 styleable LinearLayoutCompat android_gravity android_orientation android_baselineAligned android_baselineAlignedChildIndex android_weightSum divider dividerPadding measureWithLargestChild showDividers
 styleable LinearLayoutCompat_Layout android_layout_gravity android_layout_width android_layout_height android_layout_weight
 styleable ListPopupWindow android_dropDownHorizontalOffset android_dropDownVerticalOffset
+styleable LottieAnimationView lottie_autoPlay lottie_colorFilter lottie_enableMergePathsForKitKatAndAbove lottie_fileName lottie_imageAssetsFolder lottie_loop lottie_progress lottie_rawRes lottie_renderMode lottie_repeatCount lottie_repeatMode lottie_scale lottie_speed lottie_url
 styleable MaterialButton android_insetLeft android_insetRight android_insetTop android_insetBottom backgroundTint backgroundTintMode cornerRadius icon iconGravity iconPadding iconSize iconTint iconTintMode rippleColor strokeColor strokeWidth
 styleable MaterialCardView strokeColor strokeWidth
 styleable MaterialComponentsTheme bottomSheetDialogTheme bottomSheetStyle chipGroupStyle chipStandaloneStyle chipStyle colorAccent colorBackgroundFloating colorPrimary colorPrimaryDark colorSecondary editTextStyle floatingActionButtonStyle materialButtonStyle materialCardViewStyle navigationViewStyle scrimBackground snackbarButtonStyle tabStyle textAppearanceBody1 textAppearanceBody2 textAppearanceButton textAppearanceCaption textAppearanceHeadline1 textAppearanceHeadline2 textAppearanceHeadline3 textAppearanceHeadline4 textAppearanceHeadline5 textAppearanceHeadline6 textAppearanceOverline textAppearanceSubtitle1 textAppearanceSubtitle2 textInputStyle

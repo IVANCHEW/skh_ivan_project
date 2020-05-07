@@ -48,14 +48,6 @@ class FirstFragment : Fragment(), OnDayClickListener {
     private val GMT_STANDARD = 8
     private var FIRST_LOAD = true
 
-
-    //Not in use
-    /*
-    private val REQUEST_IMAGE_CAPTURE = 1
-    private val YEAR_CONSTANT = 1900
-
-     */
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,20 +62,27 @@ class FirstFragment : Fragment(), OnDayClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
-
+        Log.i(TAG, "Manual Log, onViewCreated, called")
         view.viewTreeObserver.addOnGlobalLayoutListener {
-
+            Log.i(TAG, "Manual Log, addOnGlobalLayoutListener, called")
             if(FIRST_LOAD){
-                Log.i(TAG, "Manual Log, onViewCreated, FIRST LOAD called     ")
+                Log.i(TAG, "Manual Log, onViewCreated, FIRST LOAD called")
                 FIRST_LOAD = false
                 queryWorkshopList()
             }
         }
 
-        //Button to create new object with prompt
-        /*view.findViewById<Button>(R.id.button_pull_data).setOnClickListener {
-            queryWorkshopList()
-        }*/
+    }
+
+    override fun onPause() {
+        Log.i(TAG, "Manual Log, firstFragment onPause, called")
+        super.onPause()
+    }
+
+    override fun onResume() {
+        Log.i(TAG, "Manual Log, firstFragment onResume, called")
+        FIRST_LOAD = true
+        super.onResume()
     }
 
     // Create a card view
@@ -154,9 +153,6 @@ class FirstFragment : Fragment(), OnDayClickListener {
         //Set active workshop id
         ACTIVE_WORKSHOP_ID = objectId
 
-        // Instantiate the RequestQueue.
-        val queue = Volley.newRequestQueue(context)
-
         // To retrieve book data
         val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_Workshop_Dates?workshop_id=$ACTIVE_WORKSHOP_ID"
 
@@ -172,16 +168,13 @@ class FirstFragment : Fragment(), OnDayClickListener {
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Manual Log $error")
-                queue.stop()
             })
-
-        queue.add(jsonArrayRequest)
+        VolleySingleton.getInstance(context!!).addToRequestQueue(jsonArrayRequest)
     }
 
     private fun queryObjectTime(dateQuery: String){
         // Instantiate the RequestQueue.
         Log.i(TAG, "Manual Log, query object time: $dateQuery")
-        val queue = Volley.newRequestQueue(context)
 
         // To retrieve book data
         val url =
@@ -199,18 +192,13 @@ class FirstFragment : Fragment(), OnDayClickListener {
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Manual Log $error")
-                queue.stop()
             })
-
-        queue.add(jsonArrayRequest)
+        VolleySingleton.getInstance(context!!).addToRequestQueue(jsonArrayRequest)
     }
 
     private fun queryObjectBooking(objectId: Int, bookingQuantity: Int, bookingUsername: String,
                                    bookingContactNumber: String, bookingEmail: String){
         Log.i(TAG, "Manual Log, query object id: $objectId")
-
-        // Instantiate the RequestQueue.
-        val queue = Volley.newRequestQueue(context)
 
         // To retrieve book data
         val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/" +
@@ -232,55 +220,9 @@ class FirstFragment : Fragment(), OnDayClickListener {
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Manual Log, queryObjectTime, $error")
-                queue.stop()
             })
-
-        queue.add(stringRequest)
+        VolleySingleton.getInstance(context!!).addToRequestQueue(stringRequest)
     }
-
-    /*
-    //Function moved to main activity
-    private fun queryObjectCreateNew(){
-        Log.i(TAG, "Manual Log, queryObjectCreateNew, called")
-        //Construct the alert dialogue
-        val newObjectDialogue = AlertDialog.Builder(context)
-        newObjectDialogue.setTitle("Create New Workshop")
-
-        val dialogueLinearLayout = LinearLayout(context)
-        dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT)
-        dialogueLinearLayout.orientation = LinearLayout.VERTICAL
-        val newObjectTextInput = Array(4){EditText(context)}
-        newObjectTextInput[0].hint = "Title"
-        newObjectTextInput[1].hint = "Cost"
-        newObjectTextInput[2].hint = "Length (hours)"
-        newObjectTextInput[3].hint = "Description"
-
-        for (i in newObjectTextInput.indices){
-            newObjectTextInput[i].inputType = InputType.TYPE_CLASS_TEXT
-            dialogueLinearLayout.addView(newObjectTextInput[i])
-        }
-
-        newObjectDialogue.setView(dialogueLinearLayout)
-
-        newObjectDialogue.setPositiveButton("Take Cover Picture"){ _, _ ->
-            // Do something when user press the positive button
-            Toast.makeText(context,"Please take a picture of the cover.",Toast.LENGTH_SHORT).show()
-            newObjectParams["Workshop_Name"] = newObjectTextInput[0].text.toString()
-            newObjectParams["Workshop_Cost"] = newObjectTextInput[1].text.toString()
-            newObjectParams["Workshop_Length"] = newObjectTextInput[2].text.toString()
-            newObjectParams["Workshop_Description"] = newObjectTextInput[3].text.toString()
-            // Capture cover
-            dispatchTakePictureIntent()
-        }
-
-        newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
-            Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
-        }
-
-        newObjectDialogue.show()
-    }
-     */
 
     private fun queryWorkshopList(){
         //Show progress bar
@@ -292,9 +234,6 @@ class FirstFragment : Fragment(), OnDayClickListener {
         val viewWidth = cardLayout.width
         val viewLength = viewWidth * 224 / 400
 
-        // Instantiate the RequestQueue.
-        val queue = Volley.newRequestQueue(context)
-
         // To retrieve book data
         val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Get_Available_Workshops"
 
@@ -304,7 +243,6 @@ class FirstFragment : Fragment(), OnDayClickListener {
                 // class Book(val bookTitle: String, val publisher: String, val bookAuthor: String)
                 val responseLength = response.length()
                 Log.i(TAG, "Manual Log, total data: $responseLength raw: $response")
-                queue.stop()
 
                 //Create this array to store each textview's ID
                 for (i in 0 until responseLength){
@@ -341,12 +279,11 @@ class FirstFragment : Fragment(), OnDayClickListener {
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Manual Log $error")
-                queue.stop()
             }
         )
 
         // Add the request to the RequestQueue.
-        queue.add(jsonArrayRequest)
+        VolleySingleton.getInstance(context!!).addToRequestQueue(jsonArrayRequest)
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -518,32 +455,6 @@ class FirstFragment : Fragment(), OnDayClickListener {
         }
     }
      */
-
-    // To create a new book data
-    private fun createNewObject(imageString: String){
-
-        val queue = Volley.newRequestQueue(context)
-        Log.i(TAG, "Manual Log, book submission function called")
-
-        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_New_Workshop"
-
-        newObjectParams["Workshop_Cover"] = imageString
-
-        val jsonObject = JSONObject(newObjectParams as Map<*, *>)
-
-        Log.i(TAG, "Manual Log, request submitted: $url")
-
-        val request = JsonObjectRequest(
-            Request.Method.POST, url, jsonObject,
-            Response.Listener { response ->
-                Log.i(TAG, "Manual Log $response")
-            },
-            Response.ErrorListener { error ->
-                Log.i(TAG, "Manual Log: $error")
-            })
-
-        queue.add(request)
-    }
 
     private fun resizeBitmap(bitmap:Bitmap, width:Int, height:Int):Bitmap{
         return Bitmap.createScaledBitmap(bitmap, width, height,false)

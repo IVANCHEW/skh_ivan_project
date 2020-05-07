@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#00000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#505050</color>
     <color name="rentbuttonColor">#15ace8</color>
+    <color name="backgroundColor">#f4f5f2</color>
+    <color name="highlightColor">#ff7851</color >
+    <color name="transparentToolbar">#00000000</color>
 </resources>

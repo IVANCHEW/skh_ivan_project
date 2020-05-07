@@ -16,6 +16,10 @@
         "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/navigation/nav_graph.xml"
     },
     {
+        "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/drawable-v24_logo_balloon.png.flat",
+        "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/drawable-v24/logo_balloon.png"
+    },
+    {
         "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/drawable-hdpi_ic_launcher_background.png.flat",
         "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/generated/res/pngs/debug/drawable-hdpi/ic_launcher_background.png"
     },

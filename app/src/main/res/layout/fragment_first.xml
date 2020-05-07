@@ -4,38 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
     tools:context=".FirstFragment">
-<!--
-    <Button
-        android:id="@+id/button_pull_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pull_data"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-    />-->
-
-    <!--
-    <TextView
-        android:id="@+id/textview_debug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-condensed"
-        android:text="@string/for_debugging"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_pull_data" />-->
-
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-    />
 
     <androidx.core.widget.NestedScrollView
 
@@ -55,11 +25,29 @@
             <ImageView
                 android:id="@+id/imageViewLogo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
+                android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/logo"
                 android:contentDescription="@string/application_logo"
+            />
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+            />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/scrollDownAnimation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="scroll_arrow.json"
+                app:lottie_loop="true"
+                app:lottie_speed="1.5"
             />
 
         </LinearLayout>
