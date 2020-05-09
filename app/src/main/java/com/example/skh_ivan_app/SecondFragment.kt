@@ -1,23 +1,26 @@
 package com.example.skh_ivan_app
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.ContentValues
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.Volley
-import kotlinx.android.synthetic.main.fragment_second.view.*
+import com.android.volley.toolbox.JsonObjectRequest
 import org.json.JSONObject
 import java.lang.Exception
 import java.text.SimpleDateFormat
@@ -38,6 +41,7 @@ class SecondFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_second, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val pb = view.findViewById<ProgressBar>(R.id.progressBar2)
@@ -45,8 +49,8 @@ class SecondFragment : Fragment() {
         queryAllWorkshopDates("Ivan Chew")
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun queryAllWorkshopDates(hostName: String){
-
         Log.i(TAG, "Manual Log, queryAllWorkshopDates, called")
         val pb = view!!.findViewById<ProgressBar>(R.id.progressBar2)
         val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_Host_All_Workshops_Dates?Host_Name=$hostName"
@@ -68,6 +72,112 @@ class SecondFragment : Fragment() {
         VolleySingleton.getInstance(context!!).addToRequestQueue(request)
     }
 
+    private fun queryCreateWorkshopDate(hostName: String, objectID: Int, objectDateTime: String, objectSlots: Int){
+        val params = HashMap<String,String>()
+        params["Workshop_ID"] = objectID.toString()
+        params["Date_Time"] = objectDateTime
+        params["Slots_Available"] = objectSlots.toString()
+        params["Username"] = hostName
+        val jsonObject = JSONObject(params as Map<*, *>)
+        Log.i(TAG, "Manual Log, queryCreateWorkshopDate, called. date: $jsonObject")
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_Workshop_Date"
+        val request = JsonObjectRequest(
+            Request.Method.POST, url, jsonObject, Response.Listener { response ->
+                    Toast.makeText(context,"$response", Toast.LENGTH_LONG).show()
+            }, Response.ErrorListener { error ->
+                Log.i(TAG, "Manual Log, queryCreateWorkshopDate, request error callback: $error")
+            }
+        )
+        VolleySingleton.getInstance(context!!).addToRequestQueue(request)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    @SuppressLint("SetTextI18n")
+    private fun createAlertDialogue(objectID: Int, objectTitle: String){
+        Log.i(ContentValues.TAG, "Manual Log, createAlertDialogue, called")
+
+        //General Variables
+        var selectedYear = "2020"
+        var selectedMonth = ""
+        var selectedDay = ""
+        var selectedHour = ""
+        var selectedMinute = ""
+        //Construct the alert dialogue
+        val newObjectDialogue = AlertDialog.Builder(context)
+        newObjectDialogue.setTitle("Create New Workshop Date ($objectTitle)")
+
+        val dialogueLinearLayout = LinearLayout(context)
+        dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        dialogueLinearLayout.orientation = LinearLayout.VERTICAL
+        val newObjectTextInput = Array(1){ EditText(context) }
+        newObjectTextInput[0].hint = "Number of slots"
+
+        for (i in newObjectTextInput.indices){
+            newObjectTextInput[i].inputType = InputType.TYPE_CLASS_TEXT
+            dialogueLinearLayout.addView(newObjectTextInput[i])
+        }
+
+        val chooseDateButton = Button(context)
+        chooseDateButton.text = "Select Date"
+        chooseDateButton.setOnClickListener {
+            val dateDialog = context?.let { DatePickerDialog(it) }
+            dateDialog?.setOnDateSetListener { view, year, month, dayOfMonth ->
+                selectedMonth = if (month + 1 < 10){
+                    "0" + (month + 1).toString()
+                }else{
+                    (month +1).toString()
+                }
+                selectedDay = if (dayOfMonth < 10){
+                    "0" + (dayOfMonth).toString()
+                }else{
+                    (dayOfMonth).toString()
+                }
+                selectedYear = year.toString()
+                chooseDateButton.text = "$dayOfMonth-$selectedMonth-$year"
+            }
+            dateDialog!!.show()
+        }
+        dialogueLinearLayout.addView(chooseDateButton)
+
+        val chooseTimeButton = Button(context)
+        chooseTimeButton.text = "Select Time"
+        chooseTimeButton.setOnClickListener {
+            val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+                chooseTimeButton.text = "$hour : $minute"
+                selectedHour = if (hour - GMT_STANDARD < 10){
+                    "0" + (hour - GMT_STANDARD).toString()
+                }else{
+                    (hour - GMT_STANDARD).toString()
+                }
+                selectedMinute = if (minute < 10){
+                    "0" + (minute).toString()
+                }else{
+                    (minute).toString()
+                }
+            }
+            val timeDialog = TimePickerDialog(context,timeSetListener,8,0,true)
+            timeDialog.show()
+        }
+        dialogueLinearLayout.addView(chooseTimeButton)
+
+        newObjectDialogue.setView(dialogueLinearLayout)
+
+        //Accounting the GMT time is required here
+        newObjectDialogue.setPositiveButton("Create"){ _, _ ->
+            queryCreateWorkshopDate("Ivan Chew", objectID, "$selectedYear-$selectedMonth-$selectedDay" +
+                    "T" + (selectedHour) + ":$selectedMinute:00Z", newObjectTextInput[0].text.toString().toInt())
+        }
+
+        newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
+            Toast.makeText(context,"You cancelled the dialog.", Toast.LENGTH_SHORT).show()
+        }
+
+        newObjectDialogue.show()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("SetTextI18n")
     private fun createWorkshopListCard(workshopStructure: JSONObject){
         val mainLayout = view!!.findViewById<LinearLayout>(R.id.object_List_Linear_Layout_SecondFragment)
@@ -86,12 +196,30 @@ class SecondFragment : Fragment() {
         cardLayout.layoutParams = cardLayoutParam
         val workshopObject = workshopStructure.getJSONObject("Workshop")
 
+        //Prepare title
         val workshopTitle = workshopObject.getString("Workshop_Name")
+        val workshopID = workshopObject.getInt("Id")
         val headerTextview = TextView(context)
         headerTextview.text = workshopTitle
         headerTextview.textSize = 20F
         headerTextview.typeface = Typeface.DEFAULT_BOLD
-        cardLayout.addView(headerTextview)
+        val headerLayout = LinearLayout(context)
+        headerLayout.orientation = LinearLayout.HORIZONTAL
+
+        //Prepare Button
+        val addWorkshopDateButton = Button(context)
+        val plusIcon = resources.getDrawable(android.R.drawable.ic_input_add)
+        addWorkshopDateButton.setCompoundDrawablesWithIntrinsicBounds(plusIcon,null,null,null)
+        val customViewListener = View.OnClickListener {
+            Log.i(ContentValues.TAG, "On click listener called: $workshopID")
+            createAlertDialogue(workshopID, workshopTitle)
+        }
+        addWorkshopDateButton.setOnClickListener(customViewListener)
+
+        //Add to views
+        headerLayout.addView(addWorkshopDateButton)
+        headerLayout.addView(headerTextview)
+        cardLayout.addView(headerLayout)
 
         try {
             val datesList = workshopStructure.getJSONArray("Dates")

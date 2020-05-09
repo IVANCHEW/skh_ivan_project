@@ -7,30 +7,40 @@
     android:background="@color/backgroundColor"
     tools:context=".SecondFragment">
 
-    <LinearLayout
-        android:id="@+id/object_List_Linear_Layout_SecondFragment"
+    <androidx.core.widget.NestedScrollView
+
+        android:id="@+id/secondFragment_Scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" >
 
-        <ImageView
-            android:id="@+id/imageViewLogo"
+        <LinearLayout
+            android:id="@+id/object_List_Linear_Layout_SecondFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/logo_balloon"
-            android:contentDescription="@string/application_logo"
-        />
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ProgressBar
-            android:id="@+id/progressBar2"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-        />
+            <ImageView
+                android:id="@+id/imageViewLogo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/logo_balloon"
+                android:contentDescription="@string/application_logo"
+                />
 
-    </LinearLayout>
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

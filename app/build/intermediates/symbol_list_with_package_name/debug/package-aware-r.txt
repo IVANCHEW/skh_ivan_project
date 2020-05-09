@@ -1224,7 +1224,6 @@ id automatic
 id barrier
 id beginning
 id blocking
-id book_Scrollview
 id bottom
 id buttonPanel
 id calendarContainer
@@ -1276,6 +1275,7 @@ id fill
 id fill_horizontal
 id fill_vertical
 id filled
+id firstFragment_Scrollview
 id fixed
 id forever
 id forwardButton
@@ -1371,6 +1371,7 @@ id search_mag_icon
 id search_plate
 id search_src_text
 id search_voice_btn
+id secondFragment_Scrollview
 id select_dialog_listview
 id selected
 id shortcut

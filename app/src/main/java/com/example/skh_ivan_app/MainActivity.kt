@@ -3,8 +3,10 @@ package com.example.skh_ivan_app
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType

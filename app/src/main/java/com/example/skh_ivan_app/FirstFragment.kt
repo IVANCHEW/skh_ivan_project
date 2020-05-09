@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
@@ -66,12 +68,12 @@ class FirstFragment : Fragment(), OnDayClickListener {
         view.viewTreeObserver.addOnGlobalLayoutListener {
             Log.i(TAG, "Manual Log, addOnGlobalLayoutListener, called")
             if(FIRST_LOAD){
-                Log.i(TAG, "Manual Log, onViewCreated, FIRST LOAD called")
+                val macAddress = getMac(context!!)
+                Log.i(TAG, "Manual Log, onViewCreated, FIRST LOAD called, MAC: $macAddress")
                 FIRST_LOAD = false
                 queryWorkshopList()
             }
         }
-
     }
 
     override fun onPause() {
@@ -145,6 +147,12 @@ class FirstFragment : Fragment(), OnDayClickListener {
         //Add the generated card layout to the existing layout
         cardLayout.addView(textLayout)
         cardLinearLayout.addView(cardLayout)
+    }
+
+    fun getMac(context: Context): String {
+        val manager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val info = manager.connectionInfo
+        return info.macAddress.toUpperCase()
     }
 
     private fun queryObjectDates(objectId: String){
