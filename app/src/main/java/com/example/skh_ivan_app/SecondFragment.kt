@@ -119,6 +119,10 @@ class SecondFragment : Fragment() {
             dialogueLinearLayout.addView(newObjectTextInput[i])
         }
 
+        val buttonLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT)
+        buttonLayoutParam.setMargins(30, 0, 30, 0)
+
         val chooseDateButton = Button(context)
         chooseDateButton.text = "Select Date"
         chooseDateButton.setOnClickListener {
@@ -139,6 +143,7 @@ class SecondFragment : Fragment() {
             }
             dateDialog!!.show()
         }
+        chooseDateButton.layoutParams=buttonLayoutParam
         dialogueLinearLayout.addView(chooseDateButton)
 
         val chooseTimeButton = Button(context)
@@ -157,9 +162,10 @@ class SecondFragment : Fragment() {
                     (minute).toString()
                 }
             }
-            val timeDialog = TimePickerDialog(context,timeSetListener,8,0,true)
+            val timeDialog = TimePickerDialog(context,timeSetListener,8,0,false)
             timeDialog.show()
         }
+        chooseTimeButton.layoutParams=buttonLayoutParam
         dialogueLinearLayout.addView(chooseTimeButton)
 
         newObjectDialogue.setView(dialogueLinearLayout)

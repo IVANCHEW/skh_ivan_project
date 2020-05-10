@@ -8,10 +8,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Typeface
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.text.InputType
 import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -34,6 +36,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import java.lang.Exception
+import java.net.NetworkInterface
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.*
@@ -45,7 +48,6 @@ import kotlin.collections.ArrayList
 class FirstFragment : Fragment(), OnDayClickListener {
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
-    private val newObjectParams = HashMap<String,String>()
     private var ACTIVE_WORKSHOP_ID = ""
     private val GMT_STANDARD = 8
     private var FIRST_LOAD = true
@@ -63,13 +65,13 @@ class FirstFragment : Fragment(), OnDayClickListener {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        queryMACAddress()
+
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG, "Manual Log, onViewCreated, called")
         view.viewTreeObserver.addOnGlobalLayoutListener {
             Log.i(TAG, "Manual Log, addOnGlobalLayoutListener, called")
             if(FIRST_LOAD){
-                val macAddress = getMac(context!!)
-                Log.i(TAG, "Manual Log, onViewCreated, FIRST LOAD called, MAC: $macAddress")
                 FIRST_LOAD = false
                 queryWorkshopList()
             }
@@ -149,10 +151,284 @@ class FirstFragment : Fragment(), OnDayClickListener {
         cardLinearLayout.addView(cardLayout)
     }
 
-    fun getMac(context: Context): String {
-        val manager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val info = manager.connectionInfo
-        return info.macAddress.toUpperCase()
+    private fun createRegistrationButtons(){
+        val userLayout = view!!.findViewById<LinearLayout>(R.id.User_Linear_Layout)
+
+        val createUserButton = Button(context)
+        createUserButton.text = "New User"
+        createUserButton.setOnClickListener{
+            createNewUser()
+        }
+
+        val registerDeviceButton = Button(context)
+        registerDeviceButton.text = "Register Device"
+        registerDeviceButton.setOnClickListener {
+            registerDevice()
+        }
+
+        val buttonLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        createUserButton.layoutParams = buttonLayoutParam
+        registerDeviceButton.layoutParams = buttonLayoutParam
+        userLayout.addView(createUserButton)
+        userLayout.addView(registerDeviceButton)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun createNewUser(){
+        Log.i(TAG, "Manual Log, createNewUser, called")
+
+        //Build dialogue options
+        val newObjectDialogue = AlertDialog.Builder(context)
+        newObjectDialogue.setTitle("New User Creation")
+        val dialogueLinearLayout = LinearLayout(context)
+        dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        dialogueLinearLayout.orientation = LinearLayout.VERTICAL
+
+        //-Specify input options
+        val editTextArray = Array(6 ){EditText(context)}
+        val editTextParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        editTextParams.setMargins(50, 0, 100, 0)
+        editTextArray[0].setHint("Username")
+        editTextArray[1].setHint("Password")
+        editTextArray[2].setHint("Re-enter Password")
+        editTextArray[3].setHint("Your name")
+        editTextArray[4].setHint("Contact Number")
+        editTextArray[5].setHint("Email")
+
+        editTextArray[2].inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        editTextArray[1].inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+        //TODO For testing
+        editTextArray[0].setText("BearBearChew")
+        editTextArray[1].setText("helloworld")
+        editTextArray[2].setText("helloworld")
+        editTextArray[3].setText("Ivan Chew")
+        editTextArray[4].setText("94357200")
+        editTextArray[5].setText("ivanchew92@gmail.com")
+
+        for (i in editTextArray.indices){
+            editTextArray[i].layoutParams = editTextParams
+            dialogueLinearLayout.addView(editTextArray[i])
+        }
+
+        newObjectDialogue.setView(dialogueLinearLayout)
+        newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
+            Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+            createRegistrationButtons()
+        }
+        newObjectDialogue.setPositiveButton("Create"){ _, _ ->
+
+            //TODO Create password valdiation function
+
+            queryCreateNewUser(editTextArray[0].text.toString(),
+                editTextArray[3].text.toString(),
+                editTextArray[1].text.toString(),
+                editTextArray[5].text.toString(),
+                editTextArray[4].text.toString())
+        }
+        newObjectDialogue.show()
+    }
+
+    private fun createWelcomeMessage(username: String){
+        val userLayout = view!!.findViewById<LinearLayout>(R.id.User_Linear_Layout)
+        userLayout.removeAllViews()
+        val welcomeMessage = TextView(context)
+        welcomeMessage.text = "Welcome $username"
+        welcomeMessage.typeface = Typeface.DEFAULT_BOLD
+        userLayout.addView(welcomeMessage)
+    }
+
+    private fun registerDevice(){
+        Log.i(TAG, "Manual Log, registerDevice, called")
+
+        //Build dialogue options
+        val newObjectDialogue = AlertDialog.Builder(context)
+        newObjectDialogue.setTitle("New device registration, please log in")
+        val dialogueLinearLayout = LinearLayout(context)
+        dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        dialogueLinearLayout.orientation = LinearLayout.VERTICAL
+
+        //-Specify input options
+        val editTextArray = Array(2 ){EditText(context)}
+        val editTextParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        editTextParams.setMargins(50, 0, 100, 0)
+        editTextArray[0].setHint("Username")
+        editTextArray[1].setHint("Password")
+
+        for (i in editTextArray.indices){
+            editTextArray[i].layoutParams = editTextParams
+            dialogueLinearLayout.addView(editTextArray[i])
+        }
+
+        newObjectDialogue.setView(dialogueLinearLayout)
+        newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
+            Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+            createRegistrationButtons()
+        }
+        newObjectDialogue.setPositiveButton("Register"){ _, _ ->
+            queryCreateNewDeviceRegistration(editTextArray[0].text.toString(),
+                editTextArray[1].text.toString())
+        }
+        newObjectDialogue.show()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun promptUserLogin(){
+        Log.i(TAG, "Manual Log, promptUserLogin, called")
+
+        val newObjectDialogue = AlertDialog.Builder(context)
+        newObjectDialogue.setNeutralButton("Cancel"){_,_ ->
+            Toast.makeText(context,"You cancelled the dialog.", Toast.LENGTH_SHORT).show()
+            createRegistrationButtons()
+        }
+        newObjectDialogue.setTitle("Device is currently not registered with a user")
+        val dialogueObject = newObjectDialogue.create()
+
+        val dialogueLinearLayout = LinearLayout(context)
+        dialogueLinearLayout.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+        dialogueLinearLayout.orientation = LinearLayout.VERTICAL
+
+        val buttonLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT)
+        buttonLayoutParam.setMargins(30, 0, 30, 0)
+
+        val newUserButton = Button(context)
+        newUserButton.text = "Create new user account"
+        newUserButton.setOnClickListener{
+            createNewUser()
+            dialogueObject.dismiss()
+        }
+        newUserButton.layoutParams=buttonLayoutParam
+        dialogueLinearLayout.addView(newUserButton)
+
+        val registerDeviceButton = Button(context)
+        registerDeviceButton.text = "Register new device to user"
+        registerDeviceButton.setOnClickListener {
+            registerDevice()
+            dialogueObject.dismiss()
+        }
+        registerDeviceButton.layoutParams=buttonLayoutParam
+        dialogueLinearLayout.addView(registerDeviceButton)
+
+        dialogueObject.setView(dialogueLinearLayout)
+
+        dialogueObject.show()
+    }
+
+    private fun getMacAddr(): String {
+        try {
+            val all = Collections.list(NetworkInterface.getNetworkInterfaces())
+            for (nif in all) {
+                if (!nif.getName().equals("wlan0", ignoreCase=true)) continue
+
+                val macBytes = nif.getHardwareAddress() ?: return ""
+
+                val res1 = StringBuilder()
+                for (b in macBytes) {
+                    //res1.append(Integer.toHexString(b & 0xFF) + ":");
+                    res1.append(String.format("%02X:", b))
+                }
+
+                if (res1.length > 0) {
+                    res1.deleteCharAt(res1.length - 1)
+                }
+                return res1.toString()
+            }
+        } catch (ex: Exception) {
+        }
+
+        return "02:00:00:00:00:00"
+    }
+
+    private fun queryMACAddress(){
+
+        val macAddress = getMacAddr()
+        Log.i(TAG, "Manual Log, queryMACAddress, address: $macAddress")
+
+        // To retrieve book data
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_MAC_Address?MAC_Address=$macAddress"
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, null,
+            Response.Listener { response ->
+                Log.i(TAG, "Manual Log, queryMACAddress, response: $response")
+                val responseStatus = response.getString("Status")
+                if (responseStatus=="501"){
+                    Log.i(TAG, "Manual Log, queryMACAddress, unregistered device")
+                    promptUserLogin()
+                }else if (responseStatus=="502"){
+                    Log.e(TAG, "Manual Log, queryMACAddress, error: database error")
+                    //TODO Initiate block
+                }else if (responseStatus=="ok"){
+                    Log.i(TAG, "Manual Log, queryMACAddress, ok: existing user")
+                    createWelcomeMessage(response.getString("Username"))
+                }else{
+                    Log.e(TAG, "Manual Log, queryMACAddress, error: unknown response")
+                    //TODO Initiate block
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Manual Log $error")
+            })
+        VolleySingleton.getInstance(context!!).addToRequestQueue(jsonObjectRequest)
+    }
+
+    private fun queryCreateNewUser(username: String, name: String, password: String, email: String, mobile:String){
+        Log.i(TAG, "Manual Log, queryCreateNewUser, called")
+        val params = HashMap<String,String>()
+        params["Username"] = username
+        params["Name"] = name
+        params["Password"] = password
+        params["Email"] = email
+        params["Mobile_Number"] = mobile
+        val jsonObject = JSONObject(params as Map<*, *>)
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_New_Workshop_User"
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, jsonObject,
+            Response.Listener { response ->
+                Log.i(TAG, "Manual Log, queryCreateNewUser, response: $response")
+                if (response.getString("status")!="ok"){
+                    Toast.makeText(context, response.getString("status"), Toast.LENGTH_SHORT).show()
+                    createRegistrationButtons()
+                } else {
+                    Toast.makeText(context, "New user created", Toast.LENGTH_SHORT).show()
+                    queryCreateNewDeviceRegistration(username, password)
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Manual Log, queryObjectTime, $error")
+            })
+        VolleySingleton.getInstance(context!!).addToRequestQueue(jsonObjectRequest)
+    }
+
+    private fun queryCreateNewDeviceRegistration(username: String, password: String){
+        Log.i(TAG, "Manual Log, queryCreateNewDeviceRegistration, called")
+        val params = HashMap<String,String>()
+        params["Username"] = username
+        params["Password"] = password
+        params["MAC"] = getMacAddr()
+        val jsonObject = JSONObject(params as Map<*, *>)
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_New_Device_Register"
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, jsonObject,
+            Response.Listener { response ->
+                Log.i(TAG, "Manual Log, queryCreateNewDeviceRegistration, response: $response")
+                if (response.getString("status")!="ok"){
+                    Toast.makeText(context, response.getString("status"), Toast.LENGTH_SHORT).show()
+                    createRegistrationButtons()
+                } else {
+                    Toast.makeText(context, "Device Registered", Toast.LENGTH_SHORT).show()
+                    createWelcomeMessage(username)
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Manual Log, queryObjectTime, $error")
+            })
+        VolleySingleton.getInstance(context!!).addToRequestQueue(jsonObjectRequest)
     }
 
     private fun queryObjectDates(objectId: String){
@@ -429,40 +705,6 @@ class FirstFragment : Fragment(), OnDayClickListener {
         }
         selectTimeDialogue.show()
     }
-
-    /*
-    //Function moved to main activity. To initiate camera to take picture
-    private fun dispatchTakePictureIntent() {
-        val pm = context!!.packageManager
-        Log.i(TAG, "Manual Log, Camera function called")
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            Log.i(TAG, "Manual Log, start intent")
-            takePictureIntent.resolveActivity(pm)?.also {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-            }
-        }
-    }
-    */
-
-    // NOT IN USE To obtain voice input and perform text to voice recognition
-    /*
-    private fun speak(){
-        Log.i(TAG, "Manual Log, Speak function called")
-        val mIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        mIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        mIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-        mIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hi speak something")
-        Toast.makeText(context, "Start receiving speech", Toast.LENGTH_SHORT).show()
-        try{
-            // If there is no error in showing speechTotext dialogue
-            startActivityForResult(mIntent, REQUEST_CODE_SPEECH_INPUT)
-        } catch (e: Exception){
-            // If there is error
-            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-        }
-    }
-     */
 
     private fun resizeBitmap(bitmap:Bitmap, width:Int, height:Int):Bitmap{
         return Bitmap.createScaledBitmap(bitmap, width, height,false)
