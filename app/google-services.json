@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "746217792257",
+    "firebase_url": "https://pick-meet.firebaseio.com",
+    "project_id": "pick-meet",
+    "storage_bucket": "pick-meet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:746217792257:android:15e47b7b639c943155f100",
+        "android_client_info": {
+          "package_name": "com.example.skh_ivan_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "746217792257-atrj1h0l54p5sk6q25tv6u6u71n25rn6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa2zWEyXekeYmMBMSp10le61NsAjNVUwI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "746217792257-atrj1h0l54p5sk6q25tv6u6u71n25rn6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

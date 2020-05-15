@@ -1,4 +1,10 @@
-#Mon May 11 01:45:10 MYT 2020
-base.0=/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/dex/debug/out/classes.dex
+#Sat May 16 02:06:33 MYT 2020
+path.2=classes2.dex
+path.1=classes.dex
 path.0=classes.dex
+renamed.2=classes3.dex
+renamed.1=classes2.dex
 renamed.0=classes.dex
+base.2=/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/dex/debug/mergeExtDexDebug/out/classes2.dex
+base.1=/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/dex/debug/mergeProjectDexDebug/out/classes.dex
+base.0=/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/dex/debug/mergeExtDexDebug/out/classes.dex

@@ -46,7 +46,7 @@ class SecondFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val pb = view.findViewById<ProgressBar>(R.id.progressBar2)
         pb.isVisible = true
-        queryAllWorkshopDates("Ivan Chew")
+        queryAllWorkshopDates(UserManagement.params["username"].toString())
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -59,6 +59,7 @@ class SecondFragment : Fragment() {
                 if (response.length()==0){
                     Toast.makeText(context,"There are no workshop dates created by host.", Toast.LENGTH_LONG).show()
                 }else{
+                    Log.i(TAG, "Manual Log, queryAllWorkshopDates, number of workshops:" + response.length())
                     for (i in 0 until response.length()){
                         createWorkshopListCard(response.getJSONObject(i))
                     }
@@ -83,7 +84,8 @@ class SecondFragment : Fragment() {
         val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Create_Workshop_Date"
         val request = JsonObjectRequest(
             Request.Method.POST, url, jsonObject, Response.Listener { response ->
-                    Toast.makeText(context,"$response", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context,response.getString("status"), Toast.LENGTH_LONG).show()
+                    reloadObjectList()
             }, Response.ErrorListener { error ->
                 Log.i(TAG, "Manual Log, queryCreateWorkshopDate, request error callback: $error")
             }
@@ -171,8 +173,9 @@ class SecondFragment : Fragment() {
         newObjectDialogue.setView(dialogueLinearLayout)
 
         //Accounting the GMT time is required here
+        Log.i(TAG, "Manual Log, createAlertDialogue, Querying for: " + UserManagement.params["username"])
         newObjectDialogue.setPositiveButton("Create"){ _, _ ->
-            queryCreateWorkshopDate("Ivan Chew", objectID, "$selectedYear-$selectedMonth-$selectedDay" +
+            queryCreateWorkshopDate(UserManagement.params["username"].toString(), objectID, "$selectedYear-$selectedMonth-$selectedDay" +
                     "T" + (selectedHour) + ":$selectedMinute:00Z", newObjectTextInput[0].text.toString().toInt())
         }
 
@@ -186,7 +189,7 @@ class SecondFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("SetTextI18n")
     private fun createWorkshopListCard(workshopStructure: JSONObject){
-        val mainLayout = view!!.findViewById<LinearLayout>(R.id.object_List_Linear_Layout_SecondFragment)
+        val mainLayout = view!!.findViewById<LinearLayout>(R.id.card_List_Linear_Layout_SecondFragment)
 
         //Headers
         val cardLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -232,6 +235,7 @@ class SecondFragment : Fragment() {
             val bookedCountList = workshopStructure.getJSONArray("Slots_Booked")
             val cardTextViews = MutableList(datesList.length()) { TextView(context) }
             for (j in 0 until datesList.length()) {
+                Log.i(TAG, "Manual Log, createWorkshopListCard, $workshopTitle, number of dates: " + datesList.length())
                 val workshopDateObject = datesList.getJSONObject(j)
                 val workshopDate = workshopDateObject.getString("Date_Time")
                 val parsedDate = parseDateTime(workshopDate)
@@ -295,5 +299,13 @@ class SecondFragment : Fragment() {
         }
 
         return "$dateString/$monthString,  $hourString : $minuteString"
+    }
+
+    private fun reloadObjectList(){
+        val mainLayout = view!!.findViewById<LinearLayout>(R.id.card_List_Linear_Layout_SecondFragment)
+        mainLayout.removeAllViews()
+        val pb = view!!.findViewById<ProgressBar>(R.id.progressBar2)
+        pb.isVisible = true
+        queryAllWorkshopDates(UserManagement.params["username"].toString())
     }
 }

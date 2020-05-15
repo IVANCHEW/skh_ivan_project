@@ -22,6 +22,7 @@ import androidx.navigation.findNavController
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -32,21 +33,45 @@ class MainActivity : AppCompatActivity(){
     private val newObjectParams = HashMap<String,String>()
     private val REQUEST_IMAGE_CAPTURE = 1
     private val TAG = "MANUAL"
+    private var secondFragmentSelected = false
+    private var firstFragmentSelected = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fab.setOnClickListener { view ->
-            queryObjectCreateNew()
-            Snackbar.make(view, "Create new workshop!", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).setOnNavigationItemSelectedListener { item ->
+            Log.i(TAG, "Manual Log, NavigationListener, item id: " + item.itemId)
+            when(item.itemId) {
+                R.id.navigation_home -> {
+                    if (!firstFragmentSelected){
+                        findNavController(R.id.nav_host_fragment)
+                            .navigate(R.id.action_SecondFragment_to_FirstFragment)
+                    }
+                    secondFragmentSelected = false
+                    firstFragmentSelected = true
+                    true
+                }
+                R.id.navigation_new_workshop -> {
+                    // Respond to navigation item 1 click
+                    queryObjectCreateNew()
+                    true
+                }
+                R.id.navigation_my_workshop -> {
+                    // Respond to navigation item 2 click
+                    if (!secondFragmentSelected){
+                        findNavController(R.id.nav_host_fragment)
+                            .navigate(R.id.action_FirstFragment_to_SecondFragment)
+                    }
+                    secondFragmentSelected = true
+                    firstFragmentSelected = false
+                    true
+                }
+                else -> false
+            }
         }
 
-        fab_see_bookings.setOnClickListener { view ->
-            findNavController(R.id.nav_host_fragment)
-                .navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -54,6 +79,7 @@ class MainActivity : AppCompatActivity(){
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
+
 
     private fun queryObjectCreateNew(){
         Log.i(ContentValues.TAG, "Manual Log, queryObjectCreateNew, called")

@@ -23,4 +23,9 @@
     <string name="action_create_new_object">New Workshop</string>
     <string name="application_logo">Application Logo</string>
     <string name="action_my_dates">My Dates</string>
+
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+    <string name="my_workshops">My Workshops</string>
+    <string name="new_workshop">New Workshop</string>
+    <string name="home">Home</string>
 </resources>

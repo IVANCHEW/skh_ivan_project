@@ -4,7 +4,7 @@
             "outputFile": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-large-v4/values-large-v4.xml",
             "map": [
                 {
-                    "source": "/home/ivan/.gradle/caches/transforms-2/files-2.1/a8776343fdac874fa977e09d507079eb/appcompat-1.1.0/res/values-large-v4/values-large-v4.xml",
+                    "source": "/home/ivan/.gradle/caches/transforms-2/files-2.1/5e8a6fb2754fe5acb58f336477674df1/appcompat-1.1.0/res/values-large-v4/values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "/home/ivan/.gradle/caches/transforms-2/files-2.1/16255df71047b2a53a0200f409a9520f/material-1.0.0/res/values-large-v4/values-large-v4.xml",
+                    "source": "/home/ivan/.gradle/caches/transforms-2/files-2.1/77d7223efbd5db7a02045ac0b4ee9295/material-1.1.0/res/values-large-v4/values-large-v4.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",

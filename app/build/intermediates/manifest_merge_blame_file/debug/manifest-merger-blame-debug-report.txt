@@ -11,53 +11,239 @@
 9-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml
 10
 11    <uses-permission android:name="android.permission.INTERNET" />
-11-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:4:5-67
-11-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:4:22-64
+11-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:5:5-67
+11-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:5:22-64
 12
 13    <uses-feature
-13-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:5:5-6:35
+13-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:7:5-9:35
 14        android:name="android.hardware.camera"
-14-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:5:19-57
+14-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:8:9-47
 15        android:required="true" />
-15-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:6:9-32
+15-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:9:9-32
 16
-17    <application
-17-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:7:5-24:19
-18        android:allowBackup="true"
-18-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:8:9-35
-19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-19-->[androidx.core:core:1.3.0-rc01] /home/ivan/.gradle/caches/transforms-2/files-2.1/bc4cd32cb0aea761cc8763fddc70a769/core-1.3.0-rc01/AndroidManifest.xml:24:18-86
-20        android:debuggable="true"
-21        android:icon="@mipmap/ic_launcher"
-21-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:9:9-43
-22        android:label="@string/app_name"
-22-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:10:9-41
-23        android:roundIcon="@mipmap/ic_launcher_round"
-23-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:11:9-54
-24        android:supportsRtl="true"
-24-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:12:9-35
-25        android:testOnly="true"
-26        android:theme="@style/AppTheme" >
-26-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:13:9-40
-27        <activity
-27-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:14:9-23:20
-28            android:name="com.example.skh_ivan_app.MainActivity"
-28-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:15:13-41
-29            android:label="@string/app_name"
-29-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:16:13-45
-30            android:theme="@style/AppTheme.NoActionBar" >
-30-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:17:13-56
-31            <intent-filter>
-31-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:18:13-22:29
-32                <action android:name="android.intent.action.MAIN" />
-32-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:19:17-69
-32-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:19:25-66
-33
-34                <category android:name="android.intent.category.LAUNCHER" />
-34-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:21:17-77
-34-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:21:27-74
-35            </intent-filter>
-36        </activity>
-37    </application>
-38
-39</manifest>
+17    <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+18    <!-- <uses-sdk android:minSdkVersion="14"/> -->
+19    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+19-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/6571aa5075139236e061722f62dfe22a/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:25:5-79
+19-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/6571aa5075139236e061722f62dfe22a/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:25:22-76
+20    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Required by older versions of Google Play services to create IID tokens -->
+20-->[com.google.android.gms:play-services-measurement-api:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/e725a4cf37c8af3e67758319e94db9ca/jetified-play-services-measurement-api-17.4.1/AndroidManifest.xml:24:5-68
+20-->[com.google.android.gms:play-services-measurement-api:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/e725a4cf37c8af3e67758319e94db9ca/jetified-play-services-measurement-api-17.4.1/AndroidManifest.xml:24:22-65
+21    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+21-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:26:5-82
+21-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:26:22-79
+22    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+22-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:26:5-110
+22-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:26:22-107
+23
+24    <application
+24-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:11:5-37:19
+25        android:name="androidx.multidex.MultiDexApplication"
+26        android:allowBackup="true"
+26-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:12:9-35
+27        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+27-->[androidx.core:core:1.3.0-rc01] /home/ivan/.gradle/caches/transforms-2/files-2.1/c93bb280b38eee6c23fd6ee89d365379/core-1.3.0-rc01/AndroidManifest.xml:24:18-86
+28        android:debuggable="true"
+29        android:icon="@mipmap/ic_launcher"
+29-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:13:9-43
+30        android:label="@string/app_name"
+30-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:14:9-41
+31        android:roundIcon="@mipmap/ic_launcher_round"
+31-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:15:9-54
+32        android:supportsRtl="true"
+32-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:16:9-35
+33        android:testOnly="true"
+34        android:theme="@style/AppTheme" >
+34-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:17:9-40
+35        <activity
+35-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:19:9-28:20
+36            android:name="com.example.skh_ivan_app.MainActivity"
+36-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:20:13-41
+37            android:label="@string/app_name"
+37-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:21:13-45
+38            android:theme="@style/AppTheme.NoActionBar" >
+38-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:22:13-56
+39            <intent-filter>
+39-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:23:13-27:29
+40                <action android:name="android.intent.action.MAIN" />
+40-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:24:17-69
+40-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:24:25-66
+41
+42                <category android:name="android.intent.category.LAUNCHER" />
+42-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:26:17-77
+42-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:26:27-74
+43            </intent-filter>
+44        </activity>
+45
+46        <service
+46-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:30:9-36:19
+47            android:name="com.example.skh_ivan_app.MyFirebaseMessagingService"
+47-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:31:13-55
+48            android:exported="false" >
+48-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:32:13-37
+49            <intent-filter>
+49-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:33:13-35:29
+50                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+50-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:34:17-78
+50-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:34:25-75
+51            </intent-filter>
+52        </service>
+53        <!--
+54             FirebaseMessagingService performs security checks at runtime,
+55             but set to not exported to explicitly avoid allowing another app to call it.
+56        -->
+57        <service
+57-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:28:9-34:19
+58            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+58-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:29:13-82
+59            android:exported="false" >
+59-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:30:13-37
+60            <intent-filter android:priority="-500" >
+60-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:33:13-35:29
+61                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+61-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:34:17-78
+61-->/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/AndroidManifest.xml:34:25-75
+62            </intent-filter>
+63        </service>
+64        <service
+64-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:35:9-41:19
+65            android:name="com.google.firebase.components.ComponentDiscoveryService"
+65-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:36:13-84
+66            android:directBootAware="true"
+66-->[com.google.firebase:firebase-common:19.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/1b54305980007b0b691a10692914641a/jetified-firebase-common-19.3.0/AndroidManifest.xml:34:13-43
+67            android:exported="false" >
+67-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:37:13-37
+68            <meta-data
+68-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:38:13-40:85
+69                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
+69-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:39:17-119
+70                android:value="com.google.firebase.components.ComponentRegistrar" />
+70-->[com.google.firebase:firebase-messaging:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/62ab22d1f955164c71345c74b510dba8/jetified-firebase-messaging-20.1.7/AndroidManifest.xml:40:17-82
+71            <meta-data
+71-->[com.google.firebase:firebase-datatransport:17.0.3] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a4e69f3527cee9a76b3f8659fc9e1d8/jetified-firebase-datatransport-17.0.3/AndroidManifest.xml:28:13-30:85
+72                android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar"
+72-->[com.google.firebase:firebase-datatransport:17.0.3] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a4e69f3527cee9a76b3f8659fc9e1d8/jetified-firebase-datatransport-17.0.3/AndroidManifest.xml:29:17-115
+73                android:value="com.google.firebase.components.ComponentRegistrar" />
+73-->[com.google.firebase:firebase-datatransport:17.0.3] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a4e69f3527cee9a76b3f8659fc9e1d8/jetified-firebase-datatransport-17.0.3/AndroidManifest.xml:30:17-82
+74            <meta-data
+74-->[com.google.android.gms:play-services-measurement-api:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/e725a4cf37c8af3e67758319e94db9ca/jetified-play-services-measurement-api-17.4.1/AndroidManifest.xml:30:13-32:85
+75                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+75-->[com.google.android.gms:play-services-measurement-api:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/e725a4cf37c8af3e67758319e94db9ca/jetified-play-services-measurement-api-17.4.1/AndroidManifest.xml:31:17-139
+76                android:value="com.google.firebase.components.ComponentRegistrar" />
+76-->[com.google.android.gms:play-services-measurement-api:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/e725a4cf37c8af3e67758319e94db9ca/jetified-play-services-measurement-api-17.4.1/AndroidManifest.xml:32:17-82
+77            <meta-data
+77-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:32:13-34:85
+78                android:name="com.google.firebase.components:com.google.firebase.iid.Registrar"
+78-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:33:17-96
+79                android:value="com.google.firebase.components.ComponentRegistrar" />
+79-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:34:17-82
+80            <meta-data
+80-->[com.google.firebase:firebase-installations:16.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/ade9fefe0737c4dfc97ebb801106a82a/jetified-firebase-installations-16.3.0/AndroidManifest.xml:17:13-19:85
+81                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+81-->[com.google.firebase:firebase-installations:16.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/ade9fefe0737c4dfc97ebb801106a82a/jetified-firebase-installations-16.3.0/AndroidManifest.xml:18:17-127
+82                android:value="com.google.firebase.components.ComponentRegistrar" />
+82-->[com.google.firebase:firebase-installations:16.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/ade9fefe0737c4dfc97ebb801106a82a/jetified-firebase-installations-16.3.0/AndroidManifest.xml:19:17-82
+83        </service>
+84        <service
+84-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/6571aa5075139236e061722f62dfe22a/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:29:9-35:19
+85            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+85-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/6571aa5075139236e061722f62dfe22a/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:30:13-103
+86            android:exported="false" >
+86-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/6571aa5075139236e061722f62dfe22a/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:31:13-37
+87            <meta-data
+87-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/6571aa5075139236e061722f62dfe22a/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:32:13-34:39
+88                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+88-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/6571aa5075139236e061722f62dfe22a/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:33:17-94
+89                android:value="cct" />
+89-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/6571aa5075139236e061722f62dfe22a/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:34:17-36
+90        </service>
+91        <service
+91-->[com.google.android.datatransport:transport-runtime:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/bac9b09ea1108559541e3be65616d7ff/jetified-transport-runtime-2.2.0/AndroidManifest.xml:26:9-30:19
+92            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+92-->[com.google.android.datatransport:transport-runtime:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/bac9b09ea1108559541e3be65616d7ff/jetified-transport-runtime-2.2.0/AndroidManifest.xml:27:13-117
+93            android:exported="false"
+93-->[com.google.android.datatransport:transport-runtime:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/bac9b09ea1108559541e3be65616d7ff/jetified-transport-runtime-2.2.0/AndroidManifest.xml:28:13-37
+94            android:permission="android.permission.BIND_JOB_SERVICE" >
+94-->[com.google.android.datatransport:transport-runtime:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/bac9b09ea1108559541e3be65616d7ff/jetified-transport-runtime-2.2.0/AndroidManifest.xml:29:13-69
+95        </service>
+96
+97        <receiver
+97-->[com.google.android.datatransport:transport-runtime:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/bac9b09ea1108559541e3be65616d7ff/jetified-transport-runtime-2.2.0/AndroidManifest.xml:32:9-34:40
+98            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+98-->[com.google.android.datatransport:transport-runtime:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/bac9b09ea1108559541e3be65616d7ff/jetified-transport-runtime-2.2.0/AndroidManifest.xml:33:13-132
+99            android:exported="false" />
+99-->[com.google.android.datatransport:transport-runtime:2.2.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/bac9b09ea1108559541e3be65616d7ff/jetified-transport-runtime-2.2.0/AndroidManifest.xml:34:13-37
+100        <receiver
+100-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:37:9-44:20
+101            android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+101-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:38:13-78
+102            android:exported="true"
+102-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:39:13-36
+103            android:permission="com.google.android.c2dm.permission.SEND" >
+103-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:40:13-73
+104            <intent-filter>
+104-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:41:13-43:29
+105                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+105-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:42:17-81
+105-->[com.google.firebase:firebase-iid:20.1.7] /home/ivan/.gradle/caches/transforms-2/files-2.1/3be71a90a1e848a67442c2ecd8974ab9/jetified-firebase-iid-20.1.7/AndroidManifest.xml:42:25-78
+106            </intent-filter>
+107        </receiver>
+108
+109        <provider
+109-->[com.google.firebase:firebase-common:19.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/1b54305980007b0b691a10692914641a/jetified-firebase-common-19.3.0/AndroidManifest.xml:26:9-30:39
+110            android:name="com.google.firebase.provider.FirebaseInitProvider"
+110-->[com.google.firebase:firebase-common:19.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/1b54305980007b0b691a10692914641a/jetified-firebase-common-19.3.0/AndroidManifest.xml:27:13-77
+111            android:authorities="com.example.skh_ivan_app.firebaseinitprovider"
+111-->[com.google.firebase:firebase-common:19.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/1b54305980007b0b691a10692914641a/jetified-firebase-common-19.3.0/AndroidManifest.xml:28:13-72
+112            android:exported="false"
+112-->[com.google.firebase:firebase-common:19.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/1b54305980007b0b691a10692914641a/jetified-firebase-common-19.3.0/AndroidManifest.xml:29:13-37
+113            android:initOrder="100" />
+113-->[com.google.firebase:firebase-common:19.3.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/1b54305980007b0b691a10692914641a/jetified-firebase-common-19.3.0/AndroidManifest.xml:30:13-36
+114
+115        <receiver
+115-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:29:9-33:20
+116            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+116-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:30:13-85
+117            android:enabled="true"
+117-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:31:13-35
+118            android:exported="false" >
+118-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:32:13-37
+119        </receiver>
+120
+121        <service
+121-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:35:9-38:40
+122            android:name="com.google.android.gms.measurement.AppMeasurementService"
+122-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:36:13-84
+123            android:enabled="true"
+123-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:37:13-35
+124            android:exported="false" />
+124-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:38:13-37
+125        <service
+125-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:39:9-43:72
+126            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
+126-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:40:13-87
+127            android:enabled="true"
+127-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:41:13-35
+128            android:exported="false"
+128-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:42:13-37
+129            android:permission="android.permission.BIND_JOB_SERVICE" />
+129-->[com.google.android.gms:play-services-measurement:17.4.1] /home/ivan/.gradle/caches/transforms-2/files-2.1/7a1c7e3a8c1fd7df80b36b00098dc751/jetified-play-services-measurement-17.4.1/AndroidManifest.xml:43:13-69
+130
+131        <activity
+131-->[com.google.android.gms:play-services-base:17.0.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/d48fff0349e160c934ed71005b923534/jetified-play-services-base-17.0.0/AndroidManifest.xml:23:9-26:75
+132            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+132-->[com.google.android.gms:play-services-base:17.0.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/d48fff0349e160c934ed71005b923534/jetified-play-services-base-17.0.0/AndroidManifest.xml:24:13-79
+133            android:exported="false"
+133-->[com.google.android.gms:play-services-base:17.0.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/d48fff0349e160c934ed71005b923534/jetified-play-services-base-17.0.0/AndroidManifest.xml:25:13-37
+134            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+134-->[com.google.android.gms:play-services-base:17.0.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/d48fff0349e160c934ed71005b923534/jetified-play-services-base-17.0.0/AndroidManifest.xml:26:13-72
+135
+136        <meta-data
+136-->[com.google.android.gms:play-services-basement:17.0.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/9c895757149124fd33ee788829a6031f/jetified-play-services-basement-17.0.0/AndroidManifest.xml:23:9-25:69
+137            android:name="com.google.android.gms.version"
+137-->[com.google.android.gms:play-services-basement:17.0.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/9c895757149124fd33ee788829a6031f/jetified-play-services-basement-17.0.0/AndroidManifest.xml:24:13-58
+138            android:value="@integer/google_play_services_version" />
+138-->[com.google.android.gms:play-services-basement:17.0.0] /home/ivan/.gradle/caches/transforms-2/files-2.1/9c895757149124fd33ee788829a6031f/jetified-play-services-basement-17.0.0/AndroidManifest.xml:25:13-66
+139    </application>
+140
+141</manifest>

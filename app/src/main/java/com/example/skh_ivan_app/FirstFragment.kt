@@ -28,10 +28,12 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
@@ -66,6 +68,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         queryMACAddress()
+        firebaseManager()
 
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG, "Manual Log, onViewCreated, called")
@@ -87,6 +90,21 @@ class FirstFragment : Fragment(), OnDayClickListener {
         Log.i(TAG, "Manual Log, firstFragment onResume, called")
         FIRST_LOAD = true
         super.onResume()
+    }
+
+    private fun firebaseManager(){
+        Log.i(TAG, "Manual Log, firebaseManager, called")
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.i(TAG, "getInstanceId failed", task.exception)
+                    return@OnCompleteListener
+                }
+                val token = task.result?.token
+                val msg = getString(R.string.msg_token_fmt, token)
+                Log.i(TAG, msg)
+            })
+        //FirebaseMessaging.getInstance().subscribeToTopic("GENERAL");
     }
 
     // Create a card view
@@ -367,7 +385,10 @@ class FirstFragment : Fragment(), OnDayClickListener {
                     //TODO Initiate block
                 }else if (responseStatus=="ok"){
                     Log.i(TAG, "Manual Log, queryMACAddress, ok: existing user")
-                    createWelcomeMessage(response.getString("Username"))
+                    val userName = response.getString("Username")
+                    UserManagement.setUserName(userName)
+                    Log.i(TAG, "Manual Log, queryMACAddress, userManagement class initiated: " + UserManagement.params["username"].toString())
+                    createWelcomeMessage(userName)
                 }else{
                     Log.e(TAG, "Manual Log, queryMACAddress, error: unknown response")
                     //TODO Initiate block
@@ -434,6 +455,14 @@ class FirstFragment : Fragment(), OnDayClickListener {
     private fun queryObjectDates(objectId: String){
         Log.i(TAG, "Manual Log, query object id: $objectId")
 
+        //show loading screen
+        val progressBar = ProgressBar(context)
+        val progressBarAlertBuilder = AlertDialog.Builder(context)
+        progressBarAlertBuilder.setTitle("Loading Available Dates")
+        progressBarAlertBuilder.setView(progressBar)
+        val progressBarAlert = progressBarAlertBuilder.create()
+        progressBarAlert.show()
+
         //Set active workshop id
         ACTIVE_WORKSHOP_ID = objectId
 
@@ -449,9 +478,11 @@ class FirstFragment : Fragment(), OnDayClickListener {
                 } else {
                     showCalendar(response)
                 }
+                progressBarAlert.dismiss()
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Manual Log $error")
+                progressBarAlert.dismiss()
             })
         VolleySingleton.getInstance(context!!).addToRequestQueue(jsonArrayRequest)
     }
@@ -677,7 +708,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
 
         //TEST: Temporary testing values
         editTextArray[0].setText("3")
-        editTextArray[1].setText("Ivan Chew")
+        editTextArray[1].setText(UserManagement.params["username"])
         editTextArray[2].setText("94357250")
         editTextArray[3].setText("ivanchew@pickmeet.com")
 

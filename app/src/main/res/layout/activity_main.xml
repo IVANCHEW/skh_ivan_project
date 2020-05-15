@@ -6,29 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <include layout="@layout/content_main" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_input_add" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_see_bookings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_marginBottom="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:src="@android:drawable/ic_input_get"
-        app:layout_anchor="@id/fab"
-        app:layout_anchorGravity="top"  />
+        android:layout_marginEnd="0dp"
+        android:background="?android:attr/windowBackground"
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="@color/highlightColor"
+        app:itemTextColor="@color/highlightColor"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="bottom|center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/navigation" />
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_main" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
