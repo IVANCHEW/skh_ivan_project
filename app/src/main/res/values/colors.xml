@@ -6,5 +6,6 @@
     <color name="rentbuttonColor">#15ace8</color>
     <color name="backgroundColor">#f4f5f2</color>
     <color name="highlightColor">#ff7851</color >
+    <color name="cardButtonColor">#ffebe6</color >
     <color name="transparentToolbar">#00000000</color>
 </resources>

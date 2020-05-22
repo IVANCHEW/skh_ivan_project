@@ -72,6 +72,10 @@
         "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
     },
     {
+        "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/layout_fragment_third.xml.flat",
+        "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/layout/fragment_third.xml"
+    },
+    {
         "merged": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/build/intermediates/res/merged/debug/drawable-v24_ic_dot.png.flat",
         "source": "/home/ivan/AndroidStudioProjects/SKH_Ivan_App/app/src/main/res/drawable-v24/ic_dot.png"
     },

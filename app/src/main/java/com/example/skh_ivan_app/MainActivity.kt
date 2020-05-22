@@ -29,12 +29,32 @@ import java.io.ByteArrayOutputStream
 import java.util.HashMap
 
 class MainActivity : AppCompatActivity(){
+    companion object{
+        var secondFragmentSelected = false
+        var firstFragmentSelected = true
+        var thirdFragmentSelected = false
 
+        fun selectFirstFragment(){
+            firstFragmentSelected = true
+            secondFragmentSelected = false
+            thirdFragmentSelected = false
+        }
+
+        fun selectSecondFragment(){
+            firstFragmentSelected = false
+            secondFragmentSelected = true
+            thirdFragmentSelected = false
+        }
+
+        fun selectThirdFragment(){
+            firstFragmentSelected = false
+            secondFragmentSelected = false
+            thirdFragmentSelected = true
+        }
+    }
     private val newObjectParams = HashMap<String,String>()
     private val REQUEST_IMAGE_CAPTURE = 1
     private val TAG = "MANUAL"
-    private var secondFragmentSelected = false
-    private var firstFragmentSelected = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +68,6 @@ class MainActivity : AppCompatActivity(){
                         findNavController(R.id.nav_host_fragment)
                             .navigate(R.id.action_SecondFragment_to_FirstFragment)
                     }
-                    secondFragmentSelected = false
-                    firstFragmentSelected = true
                     true
                 }
                 R.id.navigation_new_workshop -> {
@@ -63,8 +81,6 @@ class MainActivity : AppCompatActivity(){
                         findNavController(R.id.nav_host_fragment)
                             .navigate(R.id.action_FirstFragment_to_SecondFragment)
                     }
-                    secondFragmentSelected = true
-                    firstFragmentSelected = false
                     true
                 }
                 else -> false

@@ -28,4 +28,9 @@
     <string name="my_workshops">My Workshops</string>
     <string name="new_workshop">New Workshop</string>
     <string name="home">Home</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="third_fragment_label">Third Fragment</string>
+    <string name="title_holder">title Holder</string>
 </resources>

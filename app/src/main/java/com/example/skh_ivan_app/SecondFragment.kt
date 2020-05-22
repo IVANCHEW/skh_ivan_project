@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
@@ -47,6 +48,7 @@ class SecondFragment : Fragment() {
         val pb = view.findViewById<ProgressBar>(R.id.progressBar2)
         pb.isVisible = true
         queryAllWorkshopDates(UserManagement.params["username"].toString())
+        MainActivity.selectSecondFragment()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -68,6 +70,37 @@ class SecondFragment : Fragment() {
             }, Response.ErrorListener { error ->
                 Log.i(TAG, "Manual Log, queryAllWorkshopDates, request error callback: $error")
                 pb.isVisible = false
+            }
+        )
+        VolleySingleton.getInstance(context!!).addToRequestQueue(request)
+    }
+
+    private fun queryWorkshopDetails(hostName: String, objectID: Int){
+        Log.i(TAG, "Manual Log, queryWorkshopDetails, called")
+        val params = HashMap<String,String>()
+        params["username"] = hostName
+        params["booking_id"] = objectID.toString()
+        val jsonObject = JSONObject(params as Map<*, *>)
+        val url = "https://ivan-chew.outsystemscloud.com/Chew_Database/rest/RestAPI/Query_Workshop_Booking_Details"
+        val request = JsonObjectRequest(
+            Request.Method.POST, url, jsonObject,  Response.Listener { response ->
+                if (response.length()==0){
+                    Toast.makeText(context,"There are no workshop dates created by host.", Toast.LENGTH_LONG).show()
+                }else{
+                    val responseStatus = response.getString("status")
+                    Log.i(TAG, "Manual Log, queryWorkshopDetails, status: $responseStatus number of users who made bookings:" + response.length())
+
+                    if(responseStatus=="ok"){
+                        val jsonArray = response.getJSONArray("booking_objects")
+                        ThirdFragment.populateObjects(jsonArray)
+                        findNavController().navigate(R.id.action_SecondFragment_to_ThirdFragment)
+                    } else {
+                        Toast.makeText(context, responseStatus, Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+            }, Response.ErrorListener { error ->
+                Log.i(TAG, "Manual Log, queryWorkshopDetails, request error callback: $error")
             }
         )
         VolleySingleton.getInstance(context!!).addToRequestQueue(request)
@@ -197,7 +230,7 @@ class SecondFragment : Fragment() {
         cardLayoutParam.setMargins(30, 30, 0, 30)
         val textViewLayoutParam = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT)
-        textViewLayoutParam.setMargins(60, 10, 0, 0)
+        textViewLayoutParam.setMargins(60, 10, 30, 0)
 
         //Create Card
         val cardLayout = LinearLayout(context)
@@ -233,20 +266,26 @@ class SecondFragment : Fragment() {
         try {
             val datesList = workshopStructure.getJSONArray("Dates")
             val bookedCountList = workshopStructure.getJSONArray("Slots_Booked")
-            val cardTextViews = MutableList(datesList.length()) { TextView(context) }
+            val cardButtonViews = MutableList(datesList.length()) { Button(context) }
             for (j in 0 until datesList.length()) {
                 Log.i(TAG, "Manual Log, createWorkshopListCard, $workshopTitle, number of dates: " + datesList.length())
+
                 val workshopDateObject = datesList.getJSONObject(j)
                 val workshopDate = workshopDateObject.getString("Date_Time")
                 val parsedDate = parseDateTime(workshopDate)
                 val workshopSlotsAvailable = workshopDateObject.getString("Slots_Available")
                 val workshopBookingObject = bookedCountList.getJSONObject(j)
                 val workshopBookingCount = workshopBookingObject.getInt("Count")
-                cardTextViews[j].text =
-                    "$parsedDate (Bookings: $workshopBookingCount / Slots: $workshopSlotsAvailable)"
-                cardTextViews[j].layoutParams = textViewLayoutParam
-                cardTextViews[j].textSize = 17F
-                cardLayout.addView(cardTextViews[j])
+
+                cardButtonViews[j].text = "$parsedDate (Bookings: $workshopBookingCount / Slots: $workshopSlotsAvailable)"
+                cardButtonViews[j].setOnClickListener {
+                    ThirdFragment.workshopName = workshopTitle
+                    ThirdFragment.workshopSlot = "$parsedDate (Bookings: $workshopBookingCount / Slots: $workshopSlotsAvailable)"
+                    queryWorkshopDetails(UserManagement.params["username"]!!, workshopDateObject.getInt("Id"))
+                }
+                cardButtonViews[j].layoutParams = textViewLayoutParam
+                cardButtonViews[j].setBackgroundColor(0xFFFFEBE6.toInt())
+                cardLayout.addView(cardButtonViews[j])
             }
         }catch (e: Exception){
             Log.i(TAG, "Manual Log, createWorkshopListCard error: " + e.message)

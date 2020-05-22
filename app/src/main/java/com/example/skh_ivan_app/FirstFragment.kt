@@ -69,7 +69,7 @@ class FirstFragment : Fragment(), OnDayClickListener {
 
         queryMACAddress()
         firebaseManager()
-
+        MainActivity.selectFirstFragment()
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG, "Manual Log, onViewCreated, called")
         view.viewTreeObserver.addOnGlobalLayoutListener {
